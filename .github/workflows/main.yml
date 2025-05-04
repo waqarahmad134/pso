@@ -1,0 +1,21 @@
+name: 🚀 1. Deploy to Main
+on:
+  push:
+    branches:
+      - master
+jobs:
+  web-deploy:
+    name: 🎉 Deploy to Main
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v2.3.2
+
+      - name: 📂 Sync files to Staging
+        uses: SamKirkland/FTP-Deploy-Action@4.0.0
+        with:
+          server: "ftp://145.223.17.125"
+          username: "u504134335.pso"
+          password: "AAaa11@@AA#2025"
+          server-dir: /
