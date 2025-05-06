@@ -142,7 +142,14 @@
                                     </tfoot>
                                 </table>
 
-
+                                <table class="table table-bordered mt-4">
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="5" class="text-right font-weight-bold">Grand Total:</td>
+                                            <td id="grandTotalAmount" class="font-weight-bold"></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
                                 <input type="submit" class="btn mt-3 mb-3 float-right" style="background-color: #002E63; color: white;" value="Add Record" />
                             </div>
                         </form>
@@ -153,41 +160,81 @@
     </div>
 
 <script>
+$(document).ready(function () {
+    $('input[name^="today_reading"]').on('input', function () {
+        var machineId = $(this).attr('name').match(/\d+/)[0];
+        var lastReading = parseFloat($(this).closest('tr').find('td:nth-child(3)').text()) || 0;
+        var todayReading = parseFloat($(this).val()) || 0;
 
-    $(document).ready(function () {
-        var totalFuelAmount = 0;
-        $('input[name^="today_reading"]').on('input', function () {
-            var machineId = $(this).attr('name').match(/\d+/)[0];
-            var lastReading = parseFloat($(this).closest('tr').find('td:nth-child(3)').text()) || 0;
-            var todayReading = parseFloat($(this).val()) || 0;
-            if (todayReading > lastReading) {
-                alert('Today Reading cannot be larger than Last Reading.');
-                $(this).val(''); 
-                $('#todaySales_' + machineId).text(''); 
-                $('#totalAmount_' + machineId).text('');
-                return; 
+        if (todayReading > lastReading) {
+            alert('Today Reading cannot be larger than Last Reading.');
+            $(this).val('');
+            $('#todaySales_' + machineId).text('');
+            $('#totalAmount_' + machineId).text('');
+            return;
+        }
+
+        var todaySales = lastReading - todayReading;
+        $('#todaySales_' + machineId).text(todaySales.toFixed(2) + ' LTR');
+        
+        // Get the fuel type ID more reliably by finding the closest table and its related data
+        var fuelTypeId = null;
+        // Try to get the fuel type ID from the table footer ID
+        var footerElement = $(this).closest('table').find('tfoot tr td:first');
+        if (footerElement.length > 0 && footerElement.attr('id')) {
+            var idMatch = footerElement.attr('id').match(/\d+/);
+            if (idMatch) {
+                fuelTypeId = idMatch[0];
             }
+        }
+        
+        // Fallback: If we couldn't get the ID from the footer, try to extract from the h4 element
+        if (!fuelTypeId) {
+            var fuelTypeHeader = $(this).closest('table').prev('h4');
+            if (fuelTypeHeader.length > 0) {
+                @foreach($fuelTypes as $fuelType)
+                    if ('{{ $fuelType->name }}' === fuelTypeHeader.text().trim()) {
+                        fuelTypeId = {{ $fuelType->id }};
+                    }
+                @endforeach
+            }
+        }
+        
+        // Default to the first fuel type if we still couldn't find the ID
+        if (!fuelTypeId) {
+            fuelTypeId = {{ $fuelTypes->first()->id ?? 0 }};
+        }
+        
+        // Get the fuel price
+        var fuelTypePrice = 0;
+        @foreach($fuelTypes as $fuelType)
+            if ({{ $fuelType->id }} == fuelTypeId) {
+                fuelTypePrice = {{ $fuelType->price ?? 0 }};
+            }
+        @endforeach
+        
+        var totalAmount = todaySales * fuelTypePrice;
+        $('#totalAmount_' + machineId).text('PKR ' + totalAmount.toFixed(2));
 
-           var todaySales = lastReading - todayReading;
-           $('#todaySales_' + machineId).text(todaySales.toFixed(2) + ' LTR'); 
-            var fuelTypePrice = {{ $fuelTypes->first()->price ?? 0 }};
-            var totalAmount = todaySales * fuelTypePrice;
-            $('#totalAmount_' + machineId).text('PKR ' + totalAmount.toFixed(2));
-            let total = 0;
-            row.closest('tbody').find('tr').each(function () {
-                const val = $(this).find('td:last').text().replace(/[^\d.]/g, '');
-                total += parseFloat(val) || 0;
-            });
-            $('#totalFuelAmount_' + fuelTypeId).text('PKR ' + total.toFixed(2));
+        // Calculate total for current fuel type table
+        let total = 0;
+        $(this).closest('table').find('tbody tr').each(function () {
+            const val = $(this).find('td:last').text().replace(/[^\d.]/g, '');
+            total += parseFloat(val) || 0;
         });
-    });
 
-    </script>
+        // Update the total amount for the current fuel type
+        $('#totalFuelAmount_' + fuelTypeId).text('PKR ' + total.toFixed(2));
+
+        // Update the grand total
+        updateGrandTotal();
+    });
+});
+</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const quantityInputs = document.querySelectorAll('input[name^="quantity["]');
-        let totalAll = 0;
 
         quantityInputs.forEach(input => {
             input.addEventListener('input', function () {
@@ -202,7 +249,6 @@
                 const inventory = parseInt(inventoryCell.textContent) || 0;
                 const priceText = priceCell.textContent.replace(/[^\d.]/g, '');
                 const salePrice = parseFloat(priceText) || 0;
-                console.log("🚀 ~ salePrice:", salePrice)
 
                 const total = quantity * salePrice;
                 totalAmountCell.textContent = `PKR ${total.toFixed(2)}`;
@@ -212,9 +258,30 @@
                     overall += amount;
                 });
                 document.getElementById('totalMobilOilAmount').textContent = `PKR ${overall.toFixed(2)}`;
+                updateGrandTotal();
             });
         });
     });
+</script>
+
+<script>
+    function updateGrandTotal() {
+        let grandTotal = 0;
+
+        // Collect all fuel totals
+        document.querySelectorAll('[id^="totalFuelAmount_"]').forEach(cell => {
+            const amount = parseFloat(cell.textContent.replace(/[^\d.]/g, '')) || 0;
+            grandTotal += amount;
+        });
+
+        // Add Mobil Oil total
+        const mobilOilTotalText = document.getElementById('totalMobilOilAmount')?.textContent || '';
+        const mobilTotal = parseFloat(mobilOilTotalText.replace(/[^\d.]/g, '')) || 0;
+
+        grandTotal += mobilTotal;
+
+        document.getElementById('grandTotalAmount').textContent = `PKR ${grandTotal.toFixed(2)}`;
+    }
 </script>
 
     
