@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Auth;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use App\Models\Machine;
+use App\Models\Fuel;
+use App\Models\FuelType;
+use App\Models\MobilOil;
 use Cookie;
 
 class UserController extends Controller
@@ -305,7 +309,12 @@ class UserController extends Controller
     public function record()
     {
         $customers = User::where('usertype', 'customer')->get();
-        return view('admin.record', compact('customers'));
+        $machines = Machine::all();
+        $fuels = Fuel::with('fuelType')->get(); // eager loading fuelType
+        $fuelTypes = FuelType::all();
+        $mobilOils = MobilOil::all();
+
+        return view('admin.record', compact('customers', 'machines', 'fuels', 'fuelTypes', 'mobilOils'));
     }
 
 

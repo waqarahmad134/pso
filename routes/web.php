@@ -1,17 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FuelController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
 
 //Clear Cache facade value:
@@ -233,6 +224,69 @@ Route::middleware(['checktoken'])->group(function () {
 
 
 
+
+Route::get('login', [App\Http\Controllers\UserController::class, 'loginget'])->name('login');
+Route::post('login', [App\Http\Controllers\UserController::class, 'login'])->name('logins');
+Route::get('logout', [App\Http\Controllers\UserController::class, 'logout'])->name('logout');
+
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/', [App\Http\Controllers\HomeController::class, 'home'])->name('homess');
+    Route::get('profile', [App\Http\Controllers\UserController::class, 'profile'])->name('profile');
+    Route::post('update_profile', [App\Http\Controllers\UserController::class, 'update_profile'])->name('update_profile');
+});
+
+
+// users routes
+Route::get('customers', [App\Http\Controllers\UserController::class, 'customers'])->name('customers');
+Route::get('staffs', [App\Http\Controllers\UserController::class, 'staffs'])->name('staffs');
+Route::get('list_admin', [App\Http\Controllers\UserController::class, 'list_admin'])->name('list_admin');
+Route::get('update_status/{id}', [App\Http\Controllers\UserController::class, 'update_status'])->name('update_status');
+
+//fuel routes
+
+
+Route::prefix('admin')->middleware('auth')->group(function () {
+    // Fuel Routes
+    Route::get('fuels', [App\Http\Controllers\FuelController::class, 'index'])->name('fuel.index');
+    Route::post('fuels', [App\Http\Controllers\FuelController::class, 'store'])->name('fuel.store');
+    Route::get('fuels/update_status/{id}', [App\Http\Controllers\FuelController::class, 'updateStatus'])->name('fuel.updateStatus');
+    Route::put('fuels/{id}', [App\Http\Controllers\FuelController::class, 'update'])->name('fuel.update');
+    Route::delete('fuels/{id}', [App\Http\Controllers\FuelController::class, 'destroy'])->name('fuel.delete');
+
+    // Machine Routes
+    Route::get('machines', [App\Http\Controllers\MachineController::class, 'index'])->name('machines.index');
+    Route::post('machines', [App\Http\Controllers\MachineController::class, 'store'])->name('machines.store');
+    Route::get('machines/update_status/{id}', [App\Http\Controllers\MachineController::class, 'updateStatus'])->name('machines.updateStatus');
+    Route::put('machines/{id}', [App\Http\Controllers\MachineController::class, 'update'])->name('machines.update');
+    Route::delete('machines/{id}', [App\Http\Controllers\MachineController::class, 'destroy'])->name('machines.delete');
+});
+
+
+
+//fuel type routes
+
+
+//machine routes
+// Route::get('/machines', [App\Http\Controllers\MachineController::class, 'index'])->name('machines.index');
+// Route::get('/machines/create', [App\Http\Controllers\MachineController::class, 'create'])->name('machines.create');
+// Route::post('/machines', [App\Http\Controllers\MachineController::class, 'store'])->name('machines.store');
+// Route::get('/machines/{machine}/edit', [App\Http\Controllers\MachineController::class, 'edit'])->name('machines.edit');
+// Route::put('/machines/{machine}', [App\Http\Controllers\MachineController::class, 'update'])->name('machines.update');
+// Route::delete('/machines/{machine}', [App\Http\Controllers\MachineController::class, 'destroy'])->name('machines.destroy');
+
+
+
+Route::get('record', [App\Http\Controllers\UserController::class, 'record'])->name('record');
+Route::get('add_daily_record', [App\Http\Controllers\UserController::class, 'add_daily_record'])->name('add_daily_record');
+
+
+
+
+
+
+
 Route::get('sucess', function () {
     return view('sucess');
 })->name('sucess');
@@ -245,25 +299,3 @@ Route::get('error', function () {
 Route::get('503', function () {
     return view('503');
 })->name('503');
-
-
-
-Route::get('login', [App\Http\Controllers\UserController::class, 'loginget'])->name('login');
-Route::post('login', [App\Http\Controllers\UserController::class, 'login'])->name('logins');
-Route::get('logout', [App\Http\Controllers\UserController::class, 'logout'])->name('logout');
-
-
-
-Route::middleware('auth')->group(function () {
-    Route::get('profile', [App\Http\Controllers\UserController::class, 'profile'])->name('profile');
-    Route::post('update_profile', [App\Http\Controllers\UserController::class, 'update_profile'])->name('update_profile');
-});
-
-Route::get('customers', [App\Http\Controllers\UserController::class, 'customers'])->name('customers');
-Route::get('staffs', [App\Http\Controllers\UserController::class, 'staffs'])->name('staffs');
-Route::get('list_admin', [App\Http\Controllers\UserController::class, 'list_admin'])->name('list_admin');
-Route::get('update_status/{id}', [App\Http\Controllers\UserController::class, 'update_status'])->name('update_status');
-
-Route::get('record', [App\Http\Controllers\UserController::class, 'record'])->name('record');
-Route::get('add_daily_record', [App\Http\Controllers\UserController::class, 'add_daily_record'])->name('add_daily_record');
-
