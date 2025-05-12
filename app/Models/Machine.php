@@ -9,7 +9,19 @@ class Machine extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'model', 'fuel_type_id', 'status'];
+    protected $fillable = [
+        'name',
+        'model',
+        'last_reading',
+        'fuel_id',
+        'fuel_type_id',
+        'status',
+    ];
+
+    public function fuel()
+    {
+        return $this->belongsTo(Fuel::class);
+    }
 
     public function fuelType()
     {

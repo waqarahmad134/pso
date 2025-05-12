@@ -5,7 +5,7 @@
     .dashboard-cards {
         color: white;
         border-radius: 8px;
-        height: 100%;
+        
     }
 
     .card-title {
@@ -57,7 +57,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-9 col-lg-9">
-                <div class="row" style="row-gap: 30px;">
+                <div class="row" style="row-gap: 10px">
                     <div class="col-md-4 col-lg-4">
                         <div class="card shadow-lg dashboard-cards ">
                             <div class="card-body">
@@ -164,13 +164,36 @@
                         </div>
                     </div>
                 </div>
+                <div class="row mt-4">
+                    <div class="col">
+                        @foreach($data as $fuel)
+                        <button class="card shadow-lg dashboard-cards mb-3" 
+                            onclick="populateUpdateModal('{{ $fuel->id }}', '{{ $fuel->name }}', '{{ $fuel->price }}', '{{ $fuel->description }}')">
+                            >
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h5 class="card-title">{{ $fuel->name }}</h5>
+                                    </div>
+                                    <div>
+                                        <img src="{{asset('/public/1.png')}}" width="60" alt="">
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="card-text"> {{ $fuel->price }} PKR </h4>
+                                </div>
+                            </div>
+                        </button>
+                        @endforeach
+                    </div>
+                </div>
             </div>
             <div class="col-md-3 col-lg-3">
                 <div class="card shadow-lg dashboard-cards ">
                     <div class="card-body">
                         <div>
                             <h2 style="font-size: 24px;color:#000000;font-weight:600;">Hi, Zeeshan</h2>
-                            <p class="text-dark">Here is how you‘re doing </p>
+                            <p class="text-dark">Here is how you're doing </p>
                             <p class="mt-4 text-dark">Total Receivable</p>
                             <h2 style="font-size:24px;color:#4A006D;font-weight:600px;">PKR 10,851,151.00</h2>
                             <p class="mt-4 text-dark">Today's Sales</p>
@@ -183,43 +206,55 @@
     </div>
 </div>
 
+
+<!-- Edit Fuel Modal -->
+<div class="modal fade" id="editFuelModal" tabindex="-1" aria-labelledby="editFuelModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" id="updateFuelForm" action="">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="id" id="fuel-id">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editFuelModalLabel">Edit Fuel</h5>
+                    <button type="button" onclick="closeModal()" class="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="fuel-name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="fuel-name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fuel-price" class="form-label">Price</label>
+                        <input type="number" class="form-control" id="fuel-price" name="price" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fuel-description" class="form-label">Description</label>
+                        <textarea class="form-control" id="fuel-description" name="description"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Update Fuel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-    var no_of_array = <?php echo json_encode(sizeof($graphdata->Response->titles)) ?>;
-    var titles = <?php echo json_encode($graphdata->Response->titles) ?>;
-    var vAxis = <?php echo json_encode($graphdata->Response->vAxis) ?>;
-    var datas = <?php echo json_encode($graphdata->Response->data) ?>;
+    
+    function populateUpdateModal(id, name, price, description) {
+        $('#fuel-id').val(id);
+        $('#fuel-name').val(name);
+        $('#fuel-price').val(price);
+        $('#fuel-description').val(description);
+        $('#updateFuelForm').attr('action', '{{ route("fuel.update", "") }}/' + id);
+        $('#editFuelModal').modal('show');
+    }
 
-    window.onload = function() {
-        google.charts.load('current', {
-            callback: function() {
-                for (var i = 0; i < no_of_array; i++) {
-                    var container = document.getElementById('draw-charts').appendChild(document.createElement('div'));
-                    $("#draw-charts").children().addClass("col-md-6 col-lg-6");
-                    //   $( "cite" ).addClass( "m-4" );
-                    var chart = new google.visualization.ColumnChart(container);
-                    var data = new google.visualization.arrayToDataTable(datas[i]);
-
-                    var options = {
-                        title: titles[i],
-                        bar: {
-                            groupWidth: "60%"
-                        },
-                        vAxis: vAxis[i],
-                        hAxis: {
-                            title: "Days"
-                        },
-                        width: "100%",
-                        height: 240,
-                        chartArea: {
-                            borderRadius: 5
-                        }
-                    };
-                    chart.draw(data, options);
-                }
-            },
-            packages: ['corechart']
-        });
-    };
+    function closeModal() {
+        $('#editFuelModal').modal('hide');
+    }
 </script>
 
 

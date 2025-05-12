@@ -15,4 +15,9 @@ class Fuel extends Model
     {
         return $this->belongsTo(FuelType::class);
     }
+
+    public function machines()
+    {
+        return $this->hasMany(Machine::class);
+    }
 }

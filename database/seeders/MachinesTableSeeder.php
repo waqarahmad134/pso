@@ -21,9 +21,10 @@ class MachinesTableSeeder extends Seeder
 
             $machines[] = [
                 'name' => 'Machine ' . $i,
-                'status' => 'active', // Ensure string if your schema expects string
-                'fuel_type_id' => $fuelTypeId, // Assign fuel_type_id dynamically
-                'last_reading' => rand(5000000, 5999999), // Random value like 5322465
+                'status' => 'active', 
+                'fuel_id' => $fuelTypeId,
+                'fuel_type_id' => $fuelTypeId,
+                'last_reading' => rand(5000000, 5999999),
                 'created_at' => now(),
                 'updated_at' => now(),
             ];

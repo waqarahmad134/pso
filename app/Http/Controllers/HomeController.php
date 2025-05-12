@@ -3,41 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Fuel;
+
 
 class HomeController extends Controller
 {
     public function home()
     {
-        // $client = new \GuzzleHttp\Client();
-        // $request = $client->get(env('BASE_URL') . 'booking/dashboard');
-        // $response = $request->getBody()->getContents();
-        // $data = json_decode($response);
-        // $client = new \GuzzleHttp\Client();
-        // $request = $client->get(env('BASE_URL') . '/booking/graphsdata');
-        // $response = $request->getBody()->getContents();
-        // $graphdata = json_decode($response);
-        // return view('dashboard', ['data' => $data, 'graphdata' => $graphdata]);
-        $data = (object) [
-            'Response' => (object) [
-                'totalEarnings' => 5000,
-                'totalUsers' => 1200,
-                'approvedDrivers' => 1200,
-                'totalBookings' => 1200,
-                'scheduled' => 1200,
-                'totalcancelledBookings' => 1200,
-                'totalcancelledBookings' => 1200
-            ]
-        ];
-        $graphdata = (object) [
-            'Response' => (object) [
-                'titles' => ['January', 'February', 'March', 'April', 'May'],
-                'vAxis' => ['value' => 'Amount', 'title' => 'Sales ($)'],
-                'data' => [
-                    [120, 150, 180, 100, 170],
-                ],
-            ],
-        ];
-        return view('dashboard', ['data' => $data, 'graphdata' => $graphdata]);
+        $data = Fuel::with('fuelType')->get();        
+        return view('dashboard', ['data' => $data]);
     }
 
     public function add_front(Request $request)

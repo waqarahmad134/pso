@@ -387,45 +387,6 @@
         @yield('content')
     </div>
     <script>
-        window.addEventListener('DOMContentLoaded', function() {
-            $(window).on("load", function() {
-                $.holdReady(false);
-                var copyButton = document.querySelector('.buttons-copy');
-                var Parentbuttondiv = document.querySelector('.dt-buttons');
-                Parentbuttondiv.classList.add('Parentbuttondiv');
-                if (copyButton) {
-                    addImageToButton(copyButton, "{{asset('/public/copy.png')}}");
-                    copyButton.classList.add('btn-alignment');
-                }
-
-                // Find the CSV button element
-                var csvButton = document.querySelector('.buttons-csv');
-                if (csvButton) {
-                    addImageToButton(csvButton, "{{asset('/public/download.png')}}");
-                    csvButton.classList.add('btn-alignment');
-                }
-
-                // Find the print button element
-                var printButton = document.querySelector('.buttons-print');
-                if (printButton) {
-                    addImageToButton(printButton, "{{asset('/public/print.png')}}");
-                    printButton.classList.add('btn-alignment');
-                }
-            });
-        });
-
-        function addImageToButton(button, imagePath) {
-            // Create the <img> element
-            var imgElement = document.createElement('img');
-            imgElement.src = imagePath;
-            imgElement.alt = "Logo";
-            imgElement.classList.add('img-fluid', 'logo');
-            imgElement.setAttribute('width', '20');
-
-            // Prepend the <img> element to the button
-            button.insertBefore(imgElement, button.firstChild);
-        }
-
         // Toast notification setup
         @if(Session::has('message'))
         $(document).ready(function() {
@@ -466,6 +427,45 @@
             toastr.warning("{{ session('warning') }}");
         });
         @endif
+        window.addEventListener('DOMContentLoaded', function() {
+            $(window).on("load", function() {
+                $.holdReady(false);
+                var copyButton = document.querySelector('.buttons-copy');
+                var Parentbuttondiv = document.querySelector('.dt-buttons');
+                Parentbuttondiv.classList.add('Parentbuttondiv');
+                if (copyButton) {
+                    addImageToButton(copyButton, "{{asset('/public/copy.png')}}");
+                    copyButton.classList.add('btn-alignment');
+                }
+
+                // Find the CSV button element
+                var csvButton = document.querySelector('.buttons-csv');
+                if (csvButton) {
+                    addImageToButton(csvButton, "{{asset('/public/download.png')}}");
+                    csvButton.classList.add('btn-alignment');
+                }
+
+                // Find the print button element
+                var printButton = document.querySelector('.buttons-print');
+                if (printButton) {
+                    addImageToButton(printButton, "{{asset('/public/print.png')}}");
+                    printButton.classList.add('btn-alignment');
+                }
+            });
+        });
+
+        function addImageToButton(button, imagePath) {
+            // Create the <img> element
+            var imgElement = document.createElement('img');
+            imgElement.src = imagePath;
+            imgElement.alt = "Logo";
+            imgElement.classList.add('img-fluid', 'logo');
+            imgElement.setAttribute('width', '20');
+
+            // Prepend the <img> element to the button
+            button.insertBefore(imgElement, button.firstChild);
+        }
+
     </script>
 
     <!-- Javascript -->

@@ -149,8 +149,9 @@
     function populateUpdateModal(id, name, type_id, status) {
         $('#editFuelName').val(name);
         $('#editFuelType').val(type_id);
-        $('#editFuelStatus').val(status);
-        $('#updateFuelForm').attr('action', '/admin/fuels/' + id);
+        console.log(status);
+        $('#editFuelStatus').val(status = "active" ? "1" : "0");
+        $('#updateFuelForm').attr('action', '/fuels/' + id);
     }
 </script>
 

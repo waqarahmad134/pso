@@ -247,13 +247,15 @@ Route::get('update_status/{id}', [App\Http\Controllers\UserController::class, 'u
 //fuel routes
 
 
+// Fuel Routes
+Route::get('fuels', [App\Http\Controllers\FuelController::class, 'index'])->name('fuel.index');
+Route::post('fuels', [App\Http\Controllers\FuelController::class, 'store'])->name('fuel.store');
+Route::get('fuels/update_status/{id}', [App\Http\Controllers\FuelController::class, 'updateStatus'])->name('fuel.updateStatus');
+Route::put('fuels/{id}', [App\Http\Controllers\FuelController::class, 'update'])->name('fuel.update');
+Route::delete('fuels/{id}', [App\Http\Controllers\FuelController::class, 'destroy'])->name('fuel.delete');
+
+
 Route::prefix('admin')->middleware('auth')->group(function () {
-    // Fuel Routes
-    Route::get('fuels', [App\Http\Controllers\FuelController::class, 'index'])->name('fuel.index');
-    Route::post('fuels', [App\Http\Controllers\FuelController::class, 'store'])->name('fuel.store');
-    Route::get('fuels/update_status/{id}', [App\Http\Controllers\FuelController::class, 'updateStatus'])->name('fuel.updateStatus');
-    Route::put('fuels/{id}', [App\Http\Controllers\FuelController::class, 'update'])->name('fuel.update');
-    Route::delete('fuels/{id}', [App\Http\Controllers\FuelController::class, 'destroy'])->name('fuel.delete');
 
     // Machine Routes
     Route::get('machines', [App\Http\Controllers\MachineController::class, 'index'])->name('machines.index');

@@ -34,19 +34,34 @@ class FuelController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'fuel_type_id' => 'required|exists:fuel_types,id',
-            'status' => 'required|boolean',
-        ]);
+        try {
+            $request->validate([
+                'name' => 'sometimes|required|string|max:255',
+                'price' => 'sometimes|required|numeric',
+                'description' => 'sometimes|nullable|string',
+            ]);
 
-        $fuel = Fuel::findOrFail($id);
-        $fuel->name = $request->name;
-        $fuel->fuel_type_id = $request->fuel_type_id;
-        $fuel->status = $request->status;
-        $fuel->save();
+            $fuel = Fuel::findOrFail($id);
 
-        return redirect()->route('fuel.index')->with('success', 'Fuel updated successfully!');
+            // Update only fields that are present
+            if ($request->has('name')) {
+                $fuel->name = $request->name;
+            }
+
+            if ($request->has('price')) {
+                $fuel->price = $request->price;
+            }
+
+            if ($request->has('description')) {
+                $fuel->description = $request->description;
+            }
+
+            $fuel->save();
+
+            return redirect()->back()->with('success', 'Fuel updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Update failed: ' . $e->getMessage());
+        }
     }
 
 
