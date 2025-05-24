@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Fuel;
 use App\Models\FuelType;
+use App\Models\Machine;
 use Illuminate\Http\Request;
 
 class FuelController extends Controller
@@ -12,7 +13,8 @@ class FuelController extends Controller
     {
         $fuels = Fuel::with('fuelType')->get(); // Fetch fuels with their types
         $fuelTypes = FuelType::all(); // Fetch all fuel types
-        return view('fuel', compact('fuels', 'fuelTypes'));
+        $machines = Machine::all();
+        return view('fuel', compact('fuels', 'fuelTypes', 'machines'));
     }
 
     public function store(Request $request)
@@ -21,12 +23,16 @@ class FuelController extends Controller
             'name' => 'required|string|max:255',
             'fuel_type_id' => 'required|exists:fuel_types,id',
             'status' => 'required|boolean',
+            'price' => 'required',
+            'description' => 'required|string',
         ]);
 
         Fuel::create([
             'name' => $request->name,
             'fuel_type_id' => $request->fuel_type_id,
             'status' => $request->status,
+            'price' => $request->price,
+            'description' => $request->description,
         ]);
 
         return redirect()->route('fuel.index')->with('success', 'Fuel added successfully!');
@@ -39,11 +45,12 @@ class FuelController extends Controller
                 'name' => 'sometimes|required|string|max:255',
                 'price' => 'sometimes|required|numeric',
                 'description' => 'sometimes|nullable|string',
+                'status' => 'sometimes|required|boolean',
+                'fuel_type_id' => 'sometimes|required|exists:fuel_types,id',
             ]);
 
             $fuel = Fuel::findOrFail($id);
 
-            // Update only fields that are present
             if ($request->has('name')) {
                 $fuel->name = $request->name;
             }
@@ -56,6 +63,14 @@ class FuelController extends Controller
                 $fuel->description = $request->description;
             }
 
+            if ($request->has('status')) {
+                $fuel->status = $request->status;
+            }
+
+            if ($request->has('fuel_type_id')) {
+                $fuel->fuel_type_id = $request->fuel_type_id;
+            }
+            
             $fuel->save();
 
             return redirect()->back()->with('success', 'Fuel updated successfully!');
@@ -73,6 +88,25 @@ class FuelController extends Controller
 
         return redirect()->route('fuel.index')->with('success', 'Fuel status updated!');
     }
+
+    public function assignFuel(Request $request)
+    {
+        $request->validate([
+            'machine_id' => 'required|exists:machines,id',
+            'fuel_id' => 'required|exists:fuels,id',
+        ]); 
+
+        $machine = Machine::findOrFail($request->machine_id);
+        $fuel = Fuel::findOrFail($request->fuel_id);
+
+        $fuel->liters -= $request->liters;
+        $machine->liters += $request->liters;
+        $machine->save();
+        $fuel->save();
+
+        return redirect()->route('fuel.index')->with('success', 'Fuel assigned to machine successfully!');
+    }
+    
 
     public function destroy($id)
     {

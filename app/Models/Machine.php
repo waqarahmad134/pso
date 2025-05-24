@@ -13,6 +13,7 @@ class Machine extends Model
         'name',
         'model',
         'last_reading',
+        'liters',
         'fuel_id',
         'fuel_type_id',
         'status',

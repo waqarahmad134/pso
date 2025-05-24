@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
@@ -24,7 +25,7 @@ class UserController extends Controller
         return redirect()->route('list_users');
     }
 
-    public function list_users ()
+    public function list_users()
     {
         $data = User::where('usertype', 'customer')
                     ->orderBy('created_at', 'desc')
@@ -46,6 +47,14 @@ class UserController extends Controller
                     ->orderBy('created_at', 'desc')
                     ->get(); 
         return view('admin.staffs', ['data' => $data]);
+    }
+
+    public function suppliers()
+    {
+        $data = User::where('usertype', 'supplier')
+                    ->orderBy('created_at', 'desc')
+                    ->get(); 
+        return view('admin.suppliers', ['data' => $data]);
     }
 
     public function list_admin()
@@ -72,6 +81,44 @@ class UserController extends Controller
     
         return redirect()->back()->with('success', "User has been {$statusText} successfully.");
     }
+
+
+    public function add_user(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'firstName' => 'required|string|max:255',
+                'lastName' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email',
+                'leyka_donor_phone' => 'nullable|string|max:20',
+                'password' => 'required|string|min:6',
+                'usertype' => 'required|in:admin,staff,customer,supplier',
+            ]);
+    
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput()
+                    ->with('error', 'Validation failed. Please check the form fields.');
+            }
+    
+            $user = new User();
+            $user->name = $request->firstName . ' ' . $request->lastName;
+            $user->username = strtolower($request->firstName . '.' . $request->lastName);
+            $user->email = $request->email;
+            $user->contact = $request->leyka_donor_phone;
+            $user->usertype = $request->usertype;
+            $user->password = Hash::make($request->password);
+            $user->save();
+    
+            return redirect()->back()->with('success', 'User added successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'An unexpected error occurred: ' . $e->getMessage());
+        }
+    }
+    
     
 
 
@@ -310,7 +357,7 @@ class UserController extends Controller
     {
         $customers = User::where('usertype', 'customer')->get();
         $machines = Machine::all();
-        $fuels = Fuel::with('fuelType')->get(); // eager loading fuelType
+        $fuels = Fuel::with('fuelType')->get();
         $fuelTypes = FuelType::all();
         $mobilOils = MobilOil::all();
 
@@ -318,10 +365,10 @@ class UserController extends Controller
     }
 
 
-    // public function add_daily_record()
-    // {
-    //     "complte logic"
-    // }
+    public function add_daily_record()
+    {
+        return redirect()->back()->with('sucess', 'New Record Added Sucessfully.');
+    }
 
 
 

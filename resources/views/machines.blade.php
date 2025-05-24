@@ -19,6 +19,26 @@
     </div>
     <div class="container-fluid">
         <div class="row clearfix">
+            @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+            </div>
+            @endif
+
+            @if($errors->any())
+            <div class="alert alert-danger mt-2">
+                <ul class="mb-0">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif  
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row clearfix">
             <div class="col-lg-12">
                 <div class="card">
                     <div class="header">
@@ -36,6 +56,9 @@
                                         <th>Serial #</th>
                                         <th>Machine Name</th>
                                         <th>Status</th>
+                                        <th>Liters</th>
+                                        <th>Fuel Type</th>
+                                        <th>Last Reading</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -45,14 +68,17 @@
                                     <tr>
                                         <td>{{ $count++ }}</td>
                                         <td>{{ $machine->name }}</td>
-                                        <td>{{ $machine->status == 1 ? 'Active' : 'Blocked' }}</td>
+                                        <td>{{ $machine->status == "active" ? 'Active' : 'Blocked' }}</td>
+                                        <td>{{ $machine->liters }}</td>
+                                        <td>{{ $machine->fuel->name }}</td>
+                                        <td>{{ $machine->last_reading }}</td>
                                         <td>
-                                            @if($machine->status == 1)
+                                            @if($machine->status == "active")
                                                 <a href="{{ route('machines.updateStatus', ['id' => $machine->id]) }}" class="btn btn-danger">Block</a>
                                             @else
-                                                <a href="{{ route('machines.updateStatus', ['id' => $machine->id]) }}" class="btn btn-success">Activate</a>
+                                                <a href="{{ route('machines.updateStatus', ['id' => $machine->id]) }}" class="btn btn-success">Active</a>
                                             @endif
-                                            <button class="btn btn-warning" data-toggle="modal" data-target="#updateMachineModal" onclick="populateUpdateModal('{{ $machine->id }}', '{{ $machine->name }}', '{{ $machine->status }}')">Edit</button>
+                                            <button class="btn btn-warning" data-toggle="modal" data-target="#updateMachineModal" onclick="populateUpdateModal('{{ $machine->id }}', '{{ $machine->name }}', '{{ $machine->fuel_id }}', '{{ $machine->last_reading }}')">Edit</button>
                                             <form action="{{ route('machines.delete', $machine->id) }}" method="POST" style="display:inline-block;">
                                                 @csrf
                                                 @method('DELETE')
@@ -92,6 +118,16 @@
                                 <option value="1">Active</option>
                                 <option value="0">Blocked</option>
                             </select>
+
+                            <label>Fuel Type</label>
+                            <select class="form-control" name="fuel_id" required>
+                                @foreach($fuel as $data)
+                                    <option value="{{ $data->id }}">{{ $data->name }}</option>
+                                @endforeach
+                            </select>
+
+                            <label>Last Reading</label>
+                            <input name="last_reading" type="text" class="form-control" required>
                         </div>
                     </div>
                 </div>
@@ -121,11 +157,15 @@
                             <label>Machine Name</label>
                             <input name="name" type="text" class="form-control" required id="editMachineName">
 
-                            <label>Status</label>
-                            <select class="form-control" name="status" required id="editMachineStatus">
-                                <option value="1">Active</option>
-                                <option value="0">Blocked</option>
+                            <label>Fuel Type</label>
+                            <select class="form-control" name="fuel_id" required id="editMachineFuelId">
+                                @foreach($fuel as $data)
+                                    <option value="{{ $data->id }}">{{ $data->name }}</option>
+                                @endforeach
                             </select>
+
+                            <label>Last Reading</label>
+                            <input name="last_reading" type="text" class="form-control" required id="editMachineLastReading">
                         </div>
                     </div>
                 </div>
@@ -139,10 +179,12 @@
 </div>
 
 <script>
-    function populateUpdateModal(id, name, status) {
+    function populateUpdateModal(id, name, fuel_id, last_reading) {
         $('#editMachineName').val(name);
-        $('#editMachineStatus').val(status);
-        $('#updateMachineForm').attr('action', '/admin/machines/' + id);
+        $('#editMachineFuelId').val(fuel_id);
+        $('#editMachineLastReading').val(last_reading);
+        $('#updateMachineForm').attr('action', '{{ route("machines.update", "") }}/' + id);
+
     }
 </script>
 

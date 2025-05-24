@@ -18,7 +18,8 @@ class FuelsTableSeeder extends Seeder
                 'description' => 'High-performance petrol',
                 'status' => 'active',
                 'price' => 260,
-                'fuel_type_id' => 1, // Petrol
+                'fuel_type_id' => 1, 
+                'liters' => 0.00,
                 'created_at' => $now,
                 'updated_at' => $now
             ],
@@ -27,7 +28,8 @@ class FuelsTableSeeder extends Seeder
                 'description' => 'Standard diesel from IOCL',
                 'status' => 'active',
                 'price' => 280,
-                'fuel_type_id' => 2, // Diesel
+                'fuel_type_id' => 2, 
+                'liters' => 0.00,
                 'created_at' => $now,
                 'updated_at' => $now
             ]

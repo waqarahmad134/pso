@@ -2,7 +2,7 @@ name: 🚀 1. Deploy to Main
 on:
   push:
     branches:
-      - master
+      - waqa
 jobs:
   web-deploy:
     name: 🎉 Deploy to Main

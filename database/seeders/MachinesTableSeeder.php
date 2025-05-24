@@ -9,8 +9,7 @@ class MachinesTableSeeder extends Seeder
 {
     public function run()
     {
-        $machines = [];
-        
+        $machines = [];        
         // Fetch fuel type IDs
         $fuelTypeId1 = 1;
         $fuelTypeId2 = 2;
@@ -24,7 +23,8 @@ class MachinesTableSeeder extends Seeder
                 'status' => 'active', 
                 'fuel_id' => $fuelTypeId,
                 'fuel_type_id' => $fuelTypeId,
-                'last_reading' => rand(5000000, 5999999),
+                'last_reading' => 0,
+                'liters' => 0.00,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];

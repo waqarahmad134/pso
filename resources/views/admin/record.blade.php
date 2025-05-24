@@ -89,7 +89,7 @@
                                                 <td >{{ $fuelType->name }}</td>
                                                 <td>{{ $machine->name }}</td>
                                                 <td>{{ $machine->last_reading ?? 'N/A' }} LTR</td>
-                                                <td><input class="form-control" type="number" name="today_reading[{{ $machine->id }}]"></td>
+                                                <td><input class="form-control" type="number" name="today_reading[{{ $machine->id }}]" step="0.01"></td>
                                                 <td id="todaySales_{{ $machine->id }}"></td>
                                                 <td id="totalAmount_{{ $machine->id }}"></td>
                                             </tr>
@@ -127,7 +127,7 @@
                                                     name="quantity[{{ $mobilOil->id }}]"
                                                     min="0"
                                                     max="{{ $mobilOil->inventory }}"
-                                                    oninput="this.value = Math.min(this.value, this.max)">
+                                                    oninput="this.value = Math.min(this.value, this.max)" step="0.01">
                                             </td>                                                
                                             <td id="mobilTotalAmount_{{ $mobilOil->id }}"></td>
                                         </tr>
@@ -150,6 +150,31 @@
                                     </tr>
                                 </tfoot>
                             </table>
+                          
+
+                            <div>
+                                <button  class="btn btn-primary shadow-lg" onclick="addExpenseModal()">
+                                >Add Expense Details</button>
+                            </div>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Account Head</th>
+                                        <th>Details</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expenseTableBody">
+                                    <!-- dynamic rows here -->
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3" class="text-right font-weight-bold">Total Expense :</td>
+                                        <td id="totalExpense" class="font-weight-bold">0</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
 
 
                             <div>
@@ -167,6 +192,21 @@
                                 <tbody>
                                 </tbody>
                             </table>
+
+                            <div class="mb-4">
+                                <h5 class="mb-3">Collection Management</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="inBankOnline" class="form-label">In Bank (Online)</label>
+                                        <input type="number" class="form-control" id="inBankOnline" name="in_bank_online" placeholder="Enter amount">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="cashInHand" class="form-label">Cash in Hand</label>
+                                        <input type="number" class="form-control" id="cashInHand" name="cash_in_hand" placeholder="Enter amount">
+                                    </div>
+                                </div>
+                            </div>
+
                             <input type="submit" class="btn mt-3 mb-3 float-right" style="background-color: #002E63; color: white;" value="Add Record" />
                         </div>
                     </form>
@@ -175,6 +215,64 @@
         </div>
     </div>
 </div>
+
+
+<div class="modal fade" id="addExpenseModal" tabindex="-1" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="addExpenseModalForm" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addExpenseModalLabel">Add Expense Detail</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
+            </div>
+            <div class="modal-body">
+
+                <!-- Account Head Dropdown -->
+                <div class="mb-3">
+                    <label class="form-label">Account Head</label>
+                    <select id="accountHead" name="account_head" class="form-control" required>
+                        <option value="" selected>Select Account Head</option>
+                        <option value="Cost of sales">Cost of sales</option>
+                        <option value="Rent">Rent</option>
+                        <option value="Advertising expenses">Advertising expenses</option>
+                        <option value="Depreciation expense">Depreciation expense</option>
+                        <option value="Extraordinary expenses">Extraordinary expenses</option>
+                        <option value="Operating expenses">Operating expenses</option>
+                        <option value="Insurance">Insurance</option>
+                        <option value="Utilities expense">Utilities expense</option>
+                        <option value="Bank fees">Bank fees</option>
+                        <option value="Equipment maintenance">Equipment maintenance</option>
+                        <option value="Interest expense">Interest expense</option>
+                        <option value="Fixed expenses">Fixed expenses</option>
+                        <option value="Taxes">Taxes</option>
+                        <option value="Administrative expenses">Administrative expenses</option>
+                        <option value="Salaries">Salaries</option>
+                        <option value="Supplies expense">Supplies expense</option>
+                        <option value="Training and development">Training and development</option>
+                        <option value="Travel expenses">Travel expenses</option>
+                        <option value="PSO Reward">PSO Reward</option>
+                    </select>
+                </div>
+
+                <!-- Details -->
+                <div class="mb-3">
+                    <label class="form-label">Details</label>
+                    <input type="text" class="form-control" id="expenseDetails" required>
+                </div>
+
+                <!-- Amount -->
+                <div class="mb-3">
+                    <label class="form-label">Amount</label>
+                    <input type="number" class="form-control" id="expenseAmount" required>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Add Expense</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 
 <div class="modal fade" id="addDebitModal" tabindex="-1" aria-labelledby="addDebitModalLabel" aria-hidden="true">
@@ -206,6 +304,17 @@
                     </div>
                 </div>
                 <div class="mb-3">
+                    <label class="form-label">Payment Method</label>
+                    <div class="d-flex justify-content-between align-items-center">
+                        Cash
+                        <input type="radio" class="form-control" name="record-type" required>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        Online
+                        <input type="radio" class="form-control" name="record-type" required>
+                    </div>
+                </div>
+                <div class="mb-3">
                     <label for="record-amount" class="form-label">Amount</label>
                     <input type="number" class="form-control" id="record-amount" name="record-amount">
                 </div>
@@ -216,6 +325,50 @@
         </form>
     </div>
 </div>
+
+
+<script>
+    let expenseIndex = 1;
+    let totalExpense = 0;
+
+    document.getElementById('addExpenseModalForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const accountHead = document.getElementById('accountHead').value;
+        const details = document.getElementById('expenseDetails').value;
+        const amount = parseFloat(document.getElementById('expenseAmount').value);
+
+        if (!accountHead || !details || isNaN(amount)) {
+            alert('Please fill all fields correctly.');
+            return;
+        }
+
+        // Append new row
+        const tbody = document.getElementById('expenseTableBody');
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${expenseIndex++}</td>
+            <td>${accountHead}</td>
+            <td>${details}</td>
+            <td>${amount.toFixed(2)}</td>
+        `;
+        tbody.appendChild(row);
+
+        // Update total
+        totalExpense += amount;
+        document.getElementById('totalExpense').innerText = totalExpense.toFixed(2);
+
+        // Reset form and close modal
+        this.reset();
+        $('#addExpenseModal').modal('hide');
+    });
+
+    // Trigger modal
+    function addExpenseModal() {
+        $('#addExpenseModal').modal('show');
+    }
+</script>
+
 
 <script>
     $('#addDebitForm').on('submit', function (e) {
@@ -251,6 +404,9 @@
     function addCredit() {
         $('#addDebitModal').modal('show');
     }
+    function addExpense() {
+        $('#addExpenseModal').modal('show');
+    }
 
     function closeModal() {
         $('#addDebitModal').modal('hide');
@@ -274,9 +430,7 @@ $(document).ready(function () {
         var todaySales = lastReading - todayReading;
         $('#todaySales_' + machineId).text(todaySales.toFixed(2) + ' LTR');
         
-        // Get the fuel type ID more reliably by finding the closest table and its related data
         var fuelTypeId = null;
-        // Try to get the fuel type ID from the table footer ID
         var footerElement = $(this).closest('table').find('tfoot tr td:first');
         if (footerElement.length > 0 && footerElement.attr('id')) {
             var idMatch = footerElement.attr('id').match(/\d+/);
@@ -285,7 +439,6 @@ $(document).ready(function () {
             }
         }
         
-        // Fallback: If we couldn't get the ID from the footer, try to extract from the h4 element
         if (!fuelTypeId) {
             var fuelTypeHeader = $(this).closest('table').prev('h4');
             if (fuelTypeHeader.length > 0) {
@@ -297,12 +450,10 @@ $(document).ready(function () {
             }
         }
         
-        // Default to the first fuel type if we still couldn't find the ID
         if (!fuelTypeId) {
             fuelTypeId = {{ $fuelTypes->first()->id ?? 0 }};
         }
         
-        // Get the fuel price
         var fuelTypePrice = 0;
         @foreach($fuelTypes as $fuelType)
             if ({{ $fuelType->id }} == fuelTypeId) {
@@ -313,17 +464,13 @@ $(document).ready(function () {
         var totalAmount = todaySales * fuelTypePrice;
         $('#totalAmount_' + machineId).text('PKR ' + totalAmount.toFixed(2));
 
-        // Calculate total for current fuel type table
         let total = 0;
         $(this).closest('table').find('tbody tr').each(function () {
             const val = $(this).find('td:last').text().replace(/[^\d.]/g, '');
             total += parseFloat(val) || 0;
         });
 
-        // Update the total amount for the current fuel type
         $('#totalFuelAmount_' + fuelTypeId).text('PKR ' + total.toFixed(2));
-
-        // Update the grand total
         updateGrandTotal();
     });
 });

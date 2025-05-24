@@ -12,9 +12,10 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('status')->default('active'); // e.g., active/inactive
-            $table->decimal('price', 10, 2); // New price column (10 digits, 2 decimals)
+            $table->string('status')->default('active');
+            $table->decimal('price', 10, 2); 
             $table->timestamps();
+            $table->softDeletes(); 
         });
     }
 

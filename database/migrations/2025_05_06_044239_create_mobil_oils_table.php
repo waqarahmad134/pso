@@ -14,11 +14,13 @@ class CreateMobilOilsTable extends Migration
     public function up()
     {
         Schema::create('mobil_oils', function (Blueprint $table) {
-            $table->id(); // Primary key
-            $table->string('name'); // Name of the Mobil Oil
-            $table->decimal('saleprice', 10, 2); // Sale price of the oil
-            $table->integer('inventory'); // Inventory count
-            $table->timestamps(); // Timestamps for created_at and updated_at
+            $table->id();
+            $table->string('name'); 
+            $table->decimal('sale_price', 10, 2); 
+            $table->string('status')->default('active');
+            $table->integer('inventory');
+            $table->timestamps(); 
+            $table->softDeletes(); 
         });
     }
 

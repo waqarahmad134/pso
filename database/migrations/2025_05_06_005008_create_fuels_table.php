@@ -18,10 +18,12 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('status')->default('active'); // e.g., active/inactive
-            $table->decimal('price', 10, 2); // New price column (10 digits, 2 decimals)
-            $table->timestamps();
+            $table->decimal('price', 18, 2);
+            $table->decimal('liters', 18, 2);
             $table->unsignedBigInteger('fuel_type_id'); // Foreign key reference to fuel_types table
             $table->foreign('fuel_type_id')->references('id')->on('fuel_types')->onDelete('cascade');
+            $table->timestamps();
+            $table->softDeletes(); 
         });
     }
 

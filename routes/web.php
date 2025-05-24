@@ -2,6 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FuelController;
+use App\Http\Controllers\MobilOilController;
+use App\Http\Controllers\DipController;
+use App\Http\Controllers\StockWastageController;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Artisan;
+
 
 
 
@@ -16,6 +23,29 @@ Route::get('/clear', function () {
     $exitCode = Artisan::call('config:clear');
     return '<h1>Cache facade value cleared</h1>';
 });
+
+Route::get('/delete-db', function () {
+    DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+    $tables = DB::select('SHOW TABLES');
+    $dbName = 'Tables_in_' . DB::getDatabaseName();
+    foreach ($tables as $table) {
+        Schema::drop($table->$dbName);
+    }
+
+    DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+    return 'All tables dropped successfully!';
+});
+
+Route::get('/migrations', function () {
+    Artisan::call('migrate', ['--force' => true]);
+    return 'Migrations executed successfully!';
+});
+
+Route::get('/seed', function () {
+    Artisan::call('db:seed', ['--force' => true]);
+    return 'Database seeded successfully!';
+});
+
 
 Route::middleware(['checktoken'])->group(function () {
 });
@@ -65,7 +95,6 @@ Route::middleware(['checktoken'])->group(function () {
     Route::get('list_users', [App\Http\Controllers\UserController::class, 'list_users'])->name('list_users');
     Route::get('employees', [App\Http\Controllers\UserController::class, 'employees'])->name('employees');
     Route::post('add_employees', [App\Http\Controllers\UserController::class, 'add_employee'])->name('add_employees');
-
     Route::get('delete_admin/{id}', [App\Http\Controllers\UserController::class, 'delete_admin'])->name('delete_admin');
 
     Route::post('add_admin', [App\Http\Controllers\UserController::class, 'add_admin'])->name('add_admins');
@@ -241,8 +270,10 @@ Route::middleware('auth')->group(function () {
 // users routes
 Route::get('customers', [App\Http\Controllers\UserController::class, 'customers'])->name('customers');
 Route::get('staffs', [App\Http\Controllers\UserController::class, 'staffs'])->name('staffs');
+Route::get('suppliers', [App\Http\Controllers\UserController::class, 'suppliers'])->name('suppliers');
 Route::get('list_admin', [App\Http\Controllers\UserController::class, 'list_admin'])->name('list_admin');
 Route::get('update_status/{id}', [App\Http\Controllers\UserController::class, 'update_status'])->name('update_status');
+Route::post('add_user', [App\Http\Controllers\UserController::class, 'add_user'])->name('add_user');
 
 //fuel routes
 
@@ -253,41 +284,53 @@ Route::post('fuels', [App\Http\Controllers\FuelController::class, 'store'])->nam
 Route::get('fuels/update_status/{id}', [App\Http\Controllers\FuelController::class, 'updateStatus'])->name('fuel.updateStatus');
 Route::put('fuels/{id}', [App\Http\Controllers\FuelController::class, 'update'])->name('fuel.update');
 Route::delete('fuels/{id}', [App\Http\Controllers\FuelController::class, 'destroy'])->name('fuel.delete');
+Route::post('fuel/assign', [App\Http\Controllers\FuelController::class, 'assignFuel'])->name('fuel.assign');
 
 
-Route::prefix('admin')->middleware('auth')->group(function () {
-
-    // Machine Routes
-    Route::get('machines', [App\Http\Controllers\MachineController::class, 'index'])->name('machines.index');
-    Route::post('machines', [App\Http\Controllers\MachineController::class, 'store'])->name('machines.store');
-    Route::get('machines/update_status/{id}', [App\Http\Controllers\MachineController::class, 'updateStatus'])->name('machines.updateStatus');
-    Route::put('machines/{id}', [App\Http\Controllers\MachineController::class, 'update'])->name('machines.update');
-    Route::delete('machines/{id}', [App\Http\Controllers\MachineController::class, 'destroy'])->name('machines.delete');
-});
+// Dip Routes
+Route::get('dips', [App\Http\Controllers\DipController::class, 'index'])->name('dip.index');
+Route::post('dips', [App\Http\Controllers\DipController::class, 'store'])->name('dip.store');
+Route::get('dips/update_status/{id}', [App\Http\Controllers\DipController::class, 'updateStatus'])->name('dip.updateStatus');
+Route::put('dips/{id}', [App\Http\Controllers\DipController::class, 'update'])->name('dip.update');
+Route::delete('dips/{id}', [App\Http\Controllers\DipController::class, 'destroy'])->name('dip.delete');
 
 
+Route::get('mobil_oil', [App\Http\Controllers\MobilOilController::class, 'index'])->name('mobil_oil.index');
+Route::post('mobil_oil', [App\Http\Controllers\MobilOilController::class, 'store'])->name('mobil_oil.store');
+Route::get('mobil_oil/update_status/{id}', [App\Http\Controllers\MobilOilController::class, 'updateStatus'])->name('mobil_oil.updateStatus');
+Route::put('mobil_oil/{id}', [App\Http\Controllers\MobilOilController::class, 'update'])->name('mobil_oil.update');
+Route::delete('mobil_oil/{id}', [App\Http\Controllers\MobilOilController::class, 'destroy'])->name('mobil_oil.delete');
 
-//fuel type routes
+
+Route::get('stock', [App\Http\Controllers\StockController::class, 'index'])->name('stock.index');
+Route::post('stock', [App\Http\Controllers\StockController::class, 'store'])->name('stock.store');
+Route::get('stock/update_status/{id}', [App\Http\Controllers\StockController::class, 'updateStatus'])->name('stock.updateStatus');
+Route::put('stock/{id}', [App\Http\Controllers\StockController::class, 'update'])->name('stock.update');
+Route::delete('stock/{id}', [App\Http\Controllers\StockController::class, 'destroy'])->name('stock.delete');
 
 
-//machine routes
-// Route::get('/machines', [App\Http\Controllers\MachineController::class, 'index'])->name('machines.index');
-// Route::get('/machines/create', [App\Http\Controllers\MachineController::class, 'create'])->name('machines.create');
-// Route::post('/machines', [App\Http\Controllers\MachineController::class, 'store'])->name('machines.store');
-// Route::get('/machines/{machine}/edit', [App\Http\Controllers\MachineController::class, 'edit'])->name('machines.edit');
-// Route::put('/machines/{machine}', [App\Http\Controllers\MachineController::class, 'update'])->name('machines.update');
-// Route::delete('/machines/{machine}', [App\Http\Controllers\MachineController::class, 'destroy'])->name('machines.destroy');
+Route::get('machines', [App\Http\Controllers\MachineController::class, 'index'])->name('machines.index');
+Route::post('machines', [App\Http\Controllers\MachineController::class, 'store'])->name('machines.store');
+Route::get('machines/update_status/{id}', [App\Http\Controllers\MachineController::class, 'updateStatus'])->name('machines.updateStatus');
+Route::put('machines/{id}', [App\Http\Controllers\MachineController::class, 'update'])->name('machines.update');
+Route::delete('machines/{id}', [App\Http\Controllers\MachineController::class, 'destroy'])->name('machines.delete');
 
+
+// Route::prefix('admin')->middleware('auth')->group(function () {
+
+// });
+
+
+// Stock Wastage Routes
+Route::get('stock_wastage', [App\Http\Controllers\StockWastageController::class, 'index'])->name('stock_wastage.index');
+Route::post('stock_wastage', [App\Http\Controllers\StockWastageController::class, 'store'])->name('stock_wastage.store');
+Route::get('stock_wastage/update_status/{id}', [App\Http\Controllers\StockWastageController::class, 'updateStatus'])->name('stock_wastage.updateStatus');
+Route::put('stock_wastage/{id}', [App\Http\Controllers\StockWastageController::class, 'update'])->name('stock_wastage.update');
+Route::delete('stock_wastage/{id}', [App\Http\Controllers\StockWastageController::class, 'destroy'])->name('stock_wastage.delete');
 
 
 Route::get('record', [App\Http\Controllers\UserController::class, 'record'])->name('record');
 Route::get('add_daily_record', [App\Http\Controllers\UserController::class, 'add_daily_record'])->name('add_daily_record');
-
-
-
-
-
-
 
 Route::get('sucess', function () {
     return view('sucess');
@@ -296,7 +339,6 @@ Route::get('sucess', function () {
 Route::get('error', function () {
     return view('error');
 })->name('error');
-
 
 Route::get('503', function () {
     return view('503');

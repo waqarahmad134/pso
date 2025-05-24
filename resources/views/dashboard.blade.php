@@ -150,8 +150,7 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
                                     <div>
-                                        <h5 class="card-title">Petrol                                        </h5>
-
+                                        <h5 class="card-title">Petrol</h5>
                                     </div>
                                     <div>
                                         <img class="img-fluid" src="{{asset('/public/6.png')}}" width="60" alt="">
@@ -165,8 +164,8 @@
                     </div>
                 </div>
                 <div class="row mt-4">
-                    <div class="col">
-                        @foreach($data as $fuel)
+                    @foreach($data as $fuel)
+                    <div class="col-6">
                         <button class="card shadow-lg dashboard-cards mb-3" 
                             onclick="populateUpdateModal('{{ $fuel->id }}', '{{ $fuel->name }}', '{{ $fuel->price }}', '{{ $fuel->description }}')">
                             >
@@ -184,8 +183,8 @@
                                 </div>
                             </div>
                         </button>
-                        @endforeach
                     </div>
+                    @endforeach
                 </div>
             </div>
             <div class="col-md-3 col-lg-3">

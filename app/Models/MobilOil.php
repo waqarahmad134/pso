@@ -8,14 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class MobilOil extends Model
 {
     use HasFactory;
-
-    // Optional: Define the table explicitly if needed
     protected $table = 'mobil_oils';
-
-    // Optional: Mass assignable fields
     protected $fillable = [
         'name',
         'saleprice',
         'inventory',
     ];
+
+    public function stocks()
+    {
+        return $this->morphMany(Stock::class, 'stockItem');
+    }
 }

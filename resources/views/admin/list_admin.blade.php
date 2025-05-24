@@ -2,7 +2,6 @@
 @section('content')
 
 @section('title', 'Admins List |  Admin')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.0/css/intlTelInput.css" />
 
 <div id="main-content">
     <div class="block-header">
@@ -21,6 +20,27 @@
             </div>
         </div>
     </div>
+    
+    <div class="container-fluid">
+        <div class="row clearfix">
+            @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+            </div>
+            @endif
+
+            @if($errors->any())
+            <div class="alert alert-danger mt-2">
+                <ul class="mb-0">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif  
+        </div>
+    </div>
+
     <div class="container-fluid">
         <div class="row clearfix">
             <div class="col-lg-12">
@@ -85,9 +105,10 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
-        <form method="POST" id="myForm" action="{{route('add_admins')}}" enctype="multipart/form-data">
+        <form method="POST" id="myForm" action="{{route('add_user')}}" enctype="multipart/form-data">
             @csrf
             <div class="modal-content">
                 <div class="modal-header">
@@ -127,59 +148,41 @@
                             <input type="checkbox" id="showPass">&nbsp; Show Password
                         </div>
                     </div>
+                    <div class="form-group mt-3">
+                        <label for="usertype">User Type</label>
+                        <select name="usertype" class="form-control" required>
+                            <option value="admin">Admin</option>
+                            <option value="staff">Staff</option>
+                            <option value="customer">Customer</option>
+                            <option value="supplier">Supplier</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeModel()"  data-dismiss="modal">Close</button>
-                    <!-- <button type="submit" class="btn btn-primary" onclick="phonecheck()">Add Admin</button> -->
-                    <a class="btn btn-primary text-white" onclick="phonecheck()">Add Employee</a>
+                    <button type="submit" class="btn btn-primary">Add User</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
+
+
 <script>
-    function closeModel(){
+     function closeModel(){
         $('#myForm')[0].reset();
     }
-    function phonecheck() {
-        firstName = $("input[name=firstName]").val();
-        lastName = $("input[name=lastName]").val();
-        email = $("input[name=email]").val();
-        phone = $("input[name=leyka_donor_phone]").val();
-        passInput = $("input[name=password]").val();
-        if (firstName == "") {
-            document.getElementById('erur').style.display = "block";
-            document.getElementById('erur').innerHTML = 'Please Add First Name !';
-        } else if (lastName == '') {
-            document.getElementById('erur').style.display = "block";
-            document.getElementById('erur').innerHTML = 'Please Add Last Name !';
-        } else if (email == '') {
-            document.getElementById('erur').style.display = "block";
-            document.getElementById('erur').innerHTML = 'Please Add Email !';
-        } else if (!validateEmail(email)) { // Check if the email is valid
-            document.getElementById('erur').style.display = "block";
-            document.getElementById('erur').innerHTML = 'Please Add a Valid Email!';
-        } else if (phone == '') {
-            document.getElementById('erur').style.display = "block";
-            document.getElementById('erur').innerHTML = 'Please Add Phone Number !';
-        } else if (passInput == '') {
-            document.getElementById('erur').style.display = "block";
-            document.getElementById('erur').innerHTML = 'Please Add Password !';
-        } else {
-            document.getElementById('erur').style.display = "none";
-            document.getElementById('erur').innerHTML = 'Please Add Phone Number !';
-            if (phone.includes("X")) {
-                alert("Please write the complete number.");
-            } else {
-                document.getElementById("myForm").submit();
-            }
-        }
-    }
+   
     function validateEmail(email) {
-        // Simple email validation regex
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     }
+</script>
+
+
+<script>
+   
     $(document).ready(function() {
         $('#example1').DataTable({
             dom: 'Bfrtip',
@@ -217,68 +220,6 @@
 
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.0/js/intlTelInput.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/4.0.8/jquery.inputmask.bundle.min.js"></script>
 
-
-<script>
-    $j = jQuery.noConflict();
-
-    $j(function() {
-        var input = document.querySelectorAll("input[name=leyka_donor_phone]");
-        var iti_el = $j(".iti.iti--allow-dropdown.iti--separate-dial-code");
-        if (iti_el.length) {
-            iti.destroy();
-        }
-        for (var i = 0; i < input.length; i++) {
-            iti = intlTelInput(input[i], {
-                autoHideDialCode: false,
-                autoPlaceholder: "aggressive",
-                initialCountry: "pk",
-                separateDialCode: true,
-                preferredCountries: ["ru", "th"],
-                customPlaceholder: function(
-                    selectedCountryPlaceholder,
-                    selectedCountryData
-                ) {
-                    return "" + selectedCountryPlaceholder.replace(/[0-9]/g, "X");
-                },
-                geoIpLookup: function(callback) {
-                    $j.get("https://ipinfo.io", function() {}, "jsonp").always(
-                        function(resp) {
-                            var countryCode = resp && resp.country ? resp.country : "";
-                            callback(countryCode);
-                        }
-                    );
-                },
-                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.0/js/utils.js",
-            });
-
-            $j('input[name="leyka_donor_phone"]').on(
-                "focus click countrychange",
-                function(e, countryData) {
-                    var pl = $j(this).attr("placeholder") + "";
-                    var res = pl.replace(/X/g, "9");
-                    if (res != "undefined") {
-                        $j(this).inputmask(res, {
-                            placeholder: "X",
-                            clearMaskOnLostFocus: true,
-                        });
-                    }
-                }
-            );
-
-            $j('input[name="leyka_donor_phone"]').on(
-                "focusout",
-                function(e, countryData) {
-                    var intlNumber = iti.getNumber();
-                    console.log(intlNumber);
-                    console.log(iti.s.dialCode);
-                    $('#countrycode').val(iti.s.dialCode);
-                }
-            );
-        }
-    });
-</script>
 
 @endsection
