@@ -20,23 +20,17 @@ class StockWastageController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'fuel_type_id' => 'required|exists:fuel_types,id',
-            'litres' => 'required|numeric|min:0.01',
+            'fuel_id' => 'required',
+            'liters' => 'required|numeric|min:0.01',
         ]);
-
-        // Find the fuel type
-        $fuel = FuelType::findOrFail($request->fuel_type_id);
-
-        // Optional: check if stock is sufficient (if fuel has a litres column)
-        if ($fuel->litres < $request->litres) {
+        $fuel = Fuel::findOrFail($request->fuel_id);
+        if ($fuel->liters < $request->liters) {
             return back()->with('error', 'Insufficient fuel stock for wastage.');
         }
+        
+        $wastage = StockWastage::create($request->only('fuel_id', 'liters'));
+        $fuel->liters -= $request->liters;
 
-        // Create the wastage record
-        $wastage = StockWastage::create($request->only('fuel_type_id', 'litres', 'time'));
-
-        // Subtract litres from fuel stock
-        $fuel->litres -= $request->litres;
         $fuel->save();
 
         return back()->with('success', 'Wastage recorded and stock updated.');

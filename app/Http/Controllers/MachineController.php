@@ -26,12 +26,16 @@ class MachineController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'fuel_id' => 'required|exists:fuel_types,id',
+            'fuel_id' => 'required',
             'last_reading' => 'required',
+
             'status' => 'required',
         ]);
 
-        Machine::create($request->all());
+        $data = $request->all();
+        $data['liters'] = 0; 
+    
+        Machine::create($data);
         return redirect()->route('machines.index')->with('success', 'Machine created successfully.');
     }
 

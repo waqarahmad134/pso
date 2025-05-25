@@ -13,21 +13,19 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('dips', function (Blueprint $table) {
+        Schema::create('stock_testings', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('type');
-            $table->decimal('price', 10, 2);
-            $table->decimal('liters', 10, 2);
-            $table->string('status');
             $table->unsignedBigInteger('fuel_id');
-            $table->timestamps(); 
+            $table->unsignedBigInteger('machine_id');
+            $table->decimal('litres', 10, 2);
+            $table->boolean('adjustment')->default(false);
+            $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('fuel_id')->references('id')->on('fuels')->onDelete('cascade');
+            $table->foreign('machine_id')->references('id')->on('machines')->onDelete('cascade');
         });
     }
-
 
     /**
      * Reverse the migrations.
@@ -36,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('dips');
+        Schema::dropIfExists('stock_testings');
     }
 };

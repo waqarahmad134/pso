@@ -45,7 +45,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Fuel Name</th>
-                                        <th>Litres Wasted</th>
+                                        <th>liters Wasted</th>
                                         <th>Date</th>
                                     </tr>
                                 </thead>
@@ -54,7 +54,7 @@
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $wastage->fuel->name ?? 'N/A' }}</td>
-                                        <td>{{ $wastage->litres }}</td>
+                                        <td>{{ $wastage->liters }}</td>
                                         <td>{{ $wastage->created_at->format('Y-m-d H:i') }}</td>
                                     </tr>
                                     @endforeach
@@ -82,8 +82,8 @@
                                             @endforeach
                                         </select>
 
-                                        <label for="litres">Litres Wasted</label>
-                                        <input name="litres" type="number" step="0.01" class="form-control" required>
+                                        <label for="liters">liters Wasted</label>
+                                        <input name="liters" type="number" step="0.01" class="form-control" required>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

@@ -5,6 +5,7 @@ use App\Http\Controllers\FuelController;
 use App\Http\Controllers\MobilOilController;
 use App\Http\Controllers\DipController;
 use App\Http\Controllers\StockWastageController;
+use App\Http\Controllers\StockTestingController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Artisan;
@@ -327,6 +328,13 @@ Route::post('stock_wastage', [App\Http\Controllers\StockWastageController::class
 Route::get('stock_wastage/update_status/{id}', [App\Http\Controllers\StockWastageController::class, 'updateStatus'])->name('stock_wastage.updateStatus');
 Route::put('stock_wastage/{id}', [App\Http\Controllers\StockWastageController::class, 'update'])->name('stock_wastage.update');
 Route::delete('stock_wastage/{id}', [App\Http\Controllers\StockWastageController::class, 'destroy'])->name('stock_wastage.delete');
+
+// Stock testing Routes
+Route::get('stock_testing', [App\Http\Controllers\StockTestingController::class, 'index'])->name('stock_testing.index');
+Route::post('stock_testing', [App\Http\Controllers\StockTestingController::class, 'store'])->name('stock_testing.store');
+Route::get('stock_testing/update_status/{id}', [App\Http\Controllers\StockTestingController::class, 'updateStatus'])->name('stock_testing.updateStatus');
+Route::put('stock_testing/{id}', [App\Http\Controllers\StockTestingController::class, 'update'])->name('stock_testing.update');
+Route::delete('stock_testing/{id}', [App\Http\Controllers\StockTestingController::class, 'destroy'])->name('stock_testing.delete');
 
 
 Route::get('record', [App\Http\Controllers\UserController::class, 'record'])->name('record');

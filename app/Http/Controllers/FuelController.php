@@ -30,6 +30,7 @@ class FuelController extends Controller
         Fuel::create([
             'name' => $request->name,
             'fuel_type_id' => $request->fuel_type_id,
+            'liters' => 0,
             'status' => $request->status,
             'price' => $request->price,
             'description' => $request->description,

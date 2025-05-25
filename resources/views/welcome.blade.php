@@ -276,8 +276,8 @@
                                     <a href="{{route('stock_wastage.index')}}">
                                         <span>Stock Wastage</span></a>
                                 </li>
-                                <li class="@if(\Request::route()->getName() == 'stock') active  @endif">
-                                    <a href="{{route('stock.index')}}">
+                                <li class="@if(\Request::route()->getName() == 'stock_testing') active  @endif">
+                                    <a href="{{route('stock_testing.index')}}">
                                         <span>Stock Testing</span></a>
                                 </li>
                             </ul>

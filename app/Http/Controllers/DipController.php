@@ -21,7 +21,7 @@ class DipController extends Controller
             'name' => 'required|string|max:255',
             'type' => 'required|string|max:100',
             'price' => 'required|numeric',
-            'litres' => 'required|numeric',
+            'liters' => 'required|numeric',
             'status' => 'required', // assuming status is present like in fuel
             'fuel_id' => 'required|exists:fuels,id',
         ]);
@@ -30,7 +30,7 @@ class DipController extends Controller
             'name' => $request->name,
             'type' => $request->type,
             'price' => $request->price,
-            'litres' => $request->litres,
+            'liters' => $request->liters,
             'status' => $request->status,
             'fuel_id' => $request->fuel_id,
         ]);
@@ -45,7 +45,7 @@ class DipController extends Controller
                 'name' => 'sometimes|required|string|max:255',
                 'type' => 'sometimes|required|string|max:100',
                 'price' => 'sometimes|required|numeric',
-                'litres' => 'sometimes|required|numeric',
+                'liters' => 'sometimes|required|numeric',
                 'status' => 'sometimes|required|boolean',
                 'fuel_id' => 'sometimes|required|exists:fuels,id',
             ]);
@@ -55,7 +55,7 @@ class DipController extends Controller
             if ($request->has('name')) $dip->name = $request->name;
             if ($request->has('type')) $dip->type = $request->type;
             if ($request->has('price')) $dip->price = $request->price;
-            if ($request->has('litres')) $dip->litres = $request->litres;
+            if ($request->has('liters')) $dip->liters = $request->liters;
             if ($request->has('status')) $dip->status = $request->status;
             if ($request->has('fuel_id')) $dip->fuel_id = $request->fuel_id;
             $dip->save();

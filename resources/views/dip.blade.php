@@ -39,7 +39,7 @@
                                         <th>Dip Name</th>
                                         <th>Type</th>
                                         <th>Price</th>
-                                        <th>Litres</th>
+                                        <th>liters</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -52,11 +52,11 @@
                                         <td>{{ $dip->name }}</td>
                                         <td>{{ $dip->type }}</td>
                                         <td>{{ $dip->price }}</td>
-                                        <td>{{ $dip->litres }}</td>
+                                        <td>{{ $dip->liters }}</td>
                                         <td>{{ $dip->status == 1 ? 'Active' : 'Blocked' }}</td>
                                         <td>
                                             <button class="btn btn-info" data-toggle="modal" data-target="#updateDipModal"
-                                                onclick="populateUpdateModal('{{ $dip->id }}', '{{ $dip->name }}', '{{ $dip->type }}', '{{ $dip->price }}', '{{ $dip->litres }}', '{{ $dip->status }}')">Edit</button>
+                                                onclick="populateUpdateModal('{{ $dip->id }}', '{{ $dip->name }}', '{{ $dip->type }}', '{{ $dip->price }}', '{{ $dip->liters }}', '{{ $dip->status }}')">Edit</button>
 
                                             @if($dip->status == 1)
                                                 <a href="{{ route('dip.updateStatus', ['id' => $dip->id]) }}" class="btn btn-danger">Block</a>
@@ -113,8 +113,8 @@
                     <label>Price</label>
                     <input name="price" type="number" class="form-control" required>
 
-                    <label>Litres</label>
-                    <input name="litres" type="number" class="form-control" required>
+                    <label>liters</label>
+                    <input name="liters" type="number" class="form-control" step="0.01" required>
 
                     <label>Status</label>
                     <select class="form-control" name="status" required>
@@ -152,8 +152,8 @@
                     <label>Price</label>
                     <input name="price" type="number" class="form-control" id="editDipPrice" required>
 
-                    <label>Litres</label>
-                    <input name="litres" type="number" class="form-control" id="editDipLitres" required>
+                    <label>liters</label>
+                    <input name="liters" type="number" class="form-control" id="editDipliters" step="0.01" required>
 
                     <label>Status</label>
                     <select class="form-control" name="status" id="editDipStatus" required>
@@ -185,11 +185,11 @@
 
 
 <script>
-    function populateUpdateModal(id, name, type, price, litres, status) {
+    function populateUpdateModal(id, name, type, price, liters, status) {
         $('#editDipName').val(name);
         $('#editDipType').val(type);
         $('#editDipPrice').val(price);
-        $('#editDipLitres').val(litres);
+        $('#editDipliters').val(liters);
         $('#editDipStatus').val(status);
         $('#updateDipForm').attr('action', '{{ route("dip.update", "") }}/' + id);
     }

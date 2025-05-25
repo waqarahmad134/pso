@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('stock_wastages', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('fuel_id');
-            $table->decimal('litres', 10, 2);
+            $table->decimal('liters', 10, 2);
             $table->timestamps();
 
             $table->foreign('fuel_id')->references('id')->on('fuels')->onDelete('cascade');
