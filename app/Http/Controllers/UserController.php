@@ -12,6 +12,7 @@ use App\Models\Machine;
 use App\Models\Fuel;
 use App\Models\FuelType;
 use App\Models\MobilOil;
+use App\Models\Dip;
 use Cookie;
 
 class UserController extends Controller
@@ -358,10 +359,12 @@ class UserController extends Controller
         $customers = User::where('usertype', 'customer')->get();
         $machines = Machine::all();
         $fuels = Fuel::with('fuelType')->get();
-        $fuelTypes = FuelType::all();
         $mobilOils = MobilOil::all();
+        $dips = Dip::all();
 
-        return view('admin.record', compact('customers', 'machines', 'fuels', 'fuelTypes', 'mobilOils'));
+        
+
+        return view('admin.record', compact('customers', 'machines', 'fuels', 'mobilOils', 'dips'));
     }
 
 

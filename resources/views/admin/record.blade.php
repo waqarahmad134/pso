@@ -1,6 +1,22 @@
 @extends('welcome')
 @section('content')
 
+
+<style>
+/* Chrome, Safari, Edge, Opera */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+</style>
+
+
 <div id="main-content">
     <div class="block-header">
         <div class="row clearfix">
@@ -47,20 +63,22 @@
                                     <label>DIP Petrol</label>
                                     <select name="shift" class="form-control" required>
                                         <option value="">-- Select --</option>
-                                        <option value="100">100</option>
-                                        <option value="200">200</option>
-                                        <option value="300">300</option>
-                                        <option value="400">400</option>
+                                        @foreach($dips as $dip)
+                                            @if($dip->fuel_id == 1)
+                                            <option value="{{ $dip->id }}">{{ $dip->name }}</option>
+                                            @endif
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="col-md-6 col-lg-6">
                                     <label>DIP Diesel</label>
                                     <select name="shift" class="form-control" required>
                                         <option value="">-- Select --</option>
-                                        <option value="100">100</option>
-                                        <option value="200">200</option>
-                                        <option value="300">300</option>
-                                        <option value="400">400</option>
+                                        @foreach($dips as $dip)
+                                            @if($dip->fuel_id == 2)
+                                                <option value="{{ $dip->id }}">{{ $dip->name }}</option>
+                                            @endif
+                                        @endforeach
                                     </select>
                                 </div>
                                 
@@ -70,25 +88,27 @@
                             </div>
                             
 
-                            @foreach($fuelTypes as $fuelType)
-                                <h4>{{ $fuelType->name }}</h4>
+                            @foreach($fuels as $fuel)
+                                <h4>{{ $fuel->name }}</h4>
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
                                             <th>Fuel Type</th>
                                             <th>Machine</th>
                                             <th>Last Reading</th>
+                                            <th>Liter</th>
                                             <th>Today Reading</th>
                                             <th>Today Sales</th>
                                             <th>Total Amount</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($machines->where('fuel_type_id', $fuelType->id) as $machine)
+                                        @foreach($machines->where('fuel_id', $fuel->id) as $machine)
                                             <tr>
-                                                <td >{{ $fuelType->name }}</td>
+                                                <td >{{ $fuel->name }}</td>
                                                 <td>{{ $machine->name }}</td>
-                                                <td>{{ $machine->last_reading ?? 'N/A' }} LTR</td>
+                                                <td>{{ $machine->last_reading ?? 'N/A' }} </td>
+                                                <td>{{ $machine->liters }} </td>
                                                 <td><input class="form-control" type="number" name="today_reading[{{ $machine->id }}]" step="0.01"></td>
                                                 <td id="todaySales_{{ $machine->id }}"></td>
                                                 <td id="totalAmount_{{ $machine->id }}"></td>
@@ -97,8 +117,8 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <td colspan="5" class="text-right font-weight-bold">Total {{ $fuelType->name }} Amount:</td>
-                                            <td id="totalFuelAmount_{{ $fuelType->id }}" class="font-weight-bold"></td>
+                                            <td colspan="5" class="text-right font-weight-bold">Total {{ $fuel->name }} Amount:</td>
+                                            <td id="totalFuelAmount_{{ $fuel->id }}" class="font-weight-bold"></td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -142,21 +162,23 @@
                                 </tfoot>
                             </table>
 
-                            <table class="table table-bordered mt-4">
+                            <!-- <table class="table table-bordered mt-4">
                                 <tfoot>
                                     <tr>
                                         <td colspan="5" class="text-right font-weight-bold">Grand Total:</td>
                                         <td id="grandTotalAmount" class="font-weight-bold"></td>
                                     </tr>
                                 </tfoot>
-                            </table>
+                            </table> -->
                           
 
                             <div>
                                 <button  class="btn btn-primary shadow-lg" onclick="addExpenseModal()">
                                 >Add Expense Details</button>
                             </div>
-                            <table class="table table-bordered">
+
+
+                            <table class="table table-bordered mt-4">
                                 <thead>
                                     <tr>
                                         <th>No</th>
@@ -178,10 +200,10 @@
 
 
                             <div>
-                                <button  class="btn btn-primary shadow-lg" onclick="addCredit()">
+                                <button class="btn btn-primary shadow-lg" onclick="addCredit()">
                                 >Add Debit/Credit</button>
                             </div>
-                            <table class="table" id="debitCreditTable">
+                            <table class="table table-bordered mt-4" id="debitCreditTable">
                                 <thead>
                                     <tr>
                                         <th>Customer</th>
@@ -191,6 +213,41 @@
                                 </thead>
                                 <tbody>
                                 </tbody>
+
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="2" class="text-right font-weight-bold">Total Debit Online:</td>
+                                        <td id="totalDebitOnline" class="font-weight-bold">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-right font-weight-bold">Total Debit Cash:</td>
+                                        <td id="totalDebitCash" class="font-weight-bold">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-right font-weight-bold">Total Credit Online:</td>
+                                        <td id="totalCreditOnline" class="font-weight-bold">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-right font-weight-bold">Total Credit Cash:</td>
+                                        <td id="totalCreditCash" class="font-weight-bold">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-right font-weight-bold text-success">Net Cash Balance:</td>
+                                        <td id="netCashBalance" class="font-weight-bold text-success">PKR 0</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-right font-weight-bold text-success">Net Online Balance:</td>
+                                        <td id="netOnlineBalance" class="font-weight-bold text-success">PKR 0</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-right font-weight-bold text-primary">Net Total Balance:</td>
+                                        <td id="netTotalBalance" class="font-weight-bold text-primary">PKR 0</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-right font-weight-bold">Total Debit/Credit:</td>
+                                        <td id="totalDebitCredit" class="font-weight-bold">0</td>
+                                    </tr>
+                                </tfoot>
                             </table>
 
                             <div class="mb-4">
@@ -206,6 +263,15 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <table class="table table-bordered mt-4">
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="5" class="text-right font-weight-bold">Grand Total:</td>
+                                        <td id="grandTotalAmount" class="font-weight-bold"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
 
                             <input type="submit" class="btn mt-3 mb-3 float-right" style="background-color: #002E63; color: white;" value="Add Record" />
                         </div>
@@ -293,25 +359,25 @@
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Type</label>
+                    <label class="form-label" >Type</label>
                     <div class="d-flex justify-content-between align-items-center">
                         Credit
-                        <input type="radio" class="form-control" name="record-type" required>
+                        <input type="radio" name="transaction_type" value="Credit" required>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                         Debit
-                        <input type="radio" class="form-control" name="record-type" required>
+                        <input type="radio" name="transaction_type" value="Debit" required>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Payment Method</label>
                     <div class="d-flex justify-content-between align-items-center">
                         Cash
-                        <input type="radio" class="form-control" name="record-type" required>
+                        <input type="radio" name="payment_mode" value="Cash" required>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                         Online
-                        <input type="radio" class="form-control" name="record-type" required>
+                        <input type="radio" name="payment_mode" value="Online" required>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -361,6 +427,7 @@
         // Reset form and close modal
         this.reset();
         $('#addExpenseModal').modal('hide');
+        updateGrandTotal();
     });
 
     // Trigger modal
@@ -372,31 +439,68 @@
 
 <script>
     $('#addDebitForm').on('submit', function (e) {
-        e.preventDefault();
+    e.preventDefault();
 
-        const customerId = $('select[name="customer-name"]').val();
-        const customerName = $('select[name="customer-name"] option:selected').text();
-        const type = $('input[name="record-type"]:checked').parent().text().trim();
-        const amount = $('#record-amount').val();
+    const customerId = $('select[name="customer-name"]').val();
+    const customerName = $('select[name="customer-name"] option:selected').text();
+    const type = $('input[name="transaction_type"]:checked').val(); // Debit or Credit
+    const paymentMode = $('input[name="payment_mode"]:checked').val(); // Cash or Online
+    const amount = parseFloat($('#record-amount').val());
 
-        if (!customerId || !type || !amount) {
-            alert("Please fill all fields.");
-            return;
-        }
+    if (!customerId || !type || !paymentMode || isNaN(amount)) {
+        alert("Please fill all fields including customer, transaction type, payment mode and amount.");
+        return;
+    }
 
-        // Append to table
-        $('#debitCreditTable tbody').append(`
-            <tr>
-                <td>${customerName}</td>
-                <td>${type}</td>
-                <td>${amount}</td>
-            </tr>
-        `);
+    // Append to table
+    $('#debitCreditTable tbody').append(`
+        <tr data-type="${type}" data-mode="${paymentMode}" data-amount="${amount}">
+            <td>${customerName}</td>
+            <td>${type} (${paymentMode})</td>
+            <td>PKR ${amount.toFixed(2)}</td>
+        </tr>
+    `);
 
-        // Reset form
-        $('#addDebitForm')[0].reset();
-        $('#addDebitModal').modal('hide');
+    // Recalculate totals
+    calculateTotals();
+    updateGrandTotal();
+
+    // Reset form
+    $('#addDebitForm')[0].reset();
+    $('#addDebitModal').modal('hide');
+});
+
+function calculateTotals() {
+    let debitOnline = 0, debitCash = 0, creditOnline = 0, creditCash = 0;
+
+    $('#debitCreditTable tbody tr').each(function () {
+        const type = $(this).data('type');
+        const mode = $(this).data('mode');
+        const amount = parseFloat($(this).data('amount'));
+
+        if (type === 'Debit' && mode === 'Online') debitOnline += amount;
+        if (type === 'Debit' && mode === 'Cash') debitCash += amount;
+        if (type === 'Credit' && mode === 'Online') creditOnline += amount;
+        if (type === 'Credit' && mode === 'Cash') creditCash += amount;
     });
+
+    const total = debitOnline + debitCash + creditOnline + creditCash;
+
+    const netCash = debitCash - creditCash;
+    const netOnline = debitOnline - creditOnline;
+    const netTotal = netCash + netOnline;
+
+    $('#totalDebitOnline').text(`PKR ${debitOnline.toFixed(2)}`);
+    $('#totalDebitCash').text(`PKR ${debitCash.toFixed(2)}`);
+    $('#totalCreditOnline').text(`PKR ${creditOnline.toFixed(2)}`);
+    $('#totalCreditCash').text(`PKR ${creditCash.toFixed(2)}`);
+    $('#totalDebitCredit').text(`PKR ${total.toFixed(2)}`);
+
+    $('#netCashBalance').text(`PKR ${netCash.toFixed(2)}`);
+    $('#netOnlineBalance').text(`PKR ${netOnline.toFixed(2)}`);
+    $('#netTotalBalance').text(`PKR ${netTotal.toFixed(2)}`);
+}
+
 </script>
 
 
@@ -413,23 +517,81 @@
     }
 
 
+// $(document).ready(function () {
+//     $('input[name^="today_reading"]').on('input', function () {
+//         var machineId = $(this).attr('name').match(/\d+/)[0];
+//         var lastReading = parseFloat($(this).closest('tr').find('td:nth-child(3)').text()) || 0;
+//         var todayReading = parseFloat($(this).val()) || 0;
+
+//         var todaySales = lastReading - todayReading;
+//         $('#todaySales_' + machineId).text(todaySales.toFixed(2) + ' LTR');
+        
+//         var fuelTypeId = null;
+//         var footerElement = $(this).closest('table').find('tfoot tr td:first');
+//         if (footerElement.length > 0 && footerElement.attr('id')) {
+//             var idMatch = footerElement.attr('id').match(/\d+/);
+//             if (idMatch) {
+//                 fuelTypeId = idMatch[0];
+//             }
+//         }
+        
+//         if (!fuelTypeId) {
+//             var fuelTypeHeader = $(this).closest('table').prev('h4');
+//             if (fuelTypeHeader.length > 0) {
+//                 @foreach($fuels as $fuelType)
+//                     if ('{{ $fuelType->name }}' === fuelTypeHeader.text().trim()) {
+//                         fuelTypeId = {{ $fuelType->id }};
+//                     }
+//                 @endforeach
+//             }
+//         }
+        
+//         if (!fuelTypeId) {
+//             fuelTypeId = {{ $fuels->first()->id ?? 0 }};
+//         }
+        
+//         var fuelTypePrice = 0;
+//         @foreach($fuels as $fuelType)
+//             if ({{ $fuelType->id }} == fuelTypeId) {
+//                 fuelTypePrice = {{ $fuelType->price ?? 0 }};
+//             }
+//         @endforeach
+        
+//         var totalAmount = todaySales * fuelTypePrice;
+//         $('#totalAmount_' + machineId).text('PKR ' + totalAmount.toFixed(2));
+
+//         let total = 0;
+//         $(this).closest('table').find('tbody tr').each(function () {
+//             const val = $(this).find('td:last').text().replace(/[^\d.]/g, '');
+//             total += parseFloat(val) || 0;
+//         });
+
+//         $('#totalFuelAmount_' + fuelTypeId).text('PKR ' + total.toFixed(2));
+//         updateGrandTotal();
+//     });
+// });
+
 $(document).ready(function () {
     $('input[name^="today_reading"]').on('input', function () {
+        var $row = $(this).closest('tr');
         var machineId = $(this).attr('name').match(/\d+/)[0];
-        var lastReading = parseFloat($(this).closest('tr').find('td:nth-child(3)').text()) || 0;
+        var lastReading = parseFloat($row.find('td:nth-child(3)').text()) || 0;
         var todayReading = parseFloat($(this).val()) || 0;
 
-        if (todayReading > lastReading) {
-            alert('Today Reading cannot be larger than Last Reading.');
-            $(this).val('');
-            $('#todaySales_' + machineId).text('');
-            $('#totalAmount_' + machineId).text('');
-            return;
-        }
+        // Validate that today's reading >= last reading
+        // if (todayReading < lastReading) {
+        //     alert("Today's reading cannot be less than the last reading.");
+        //     $(this).val('');
+        //     $('#todaySales_' + machineId).text('0.00 LTR');
+        //     $('#totalAmount_' + machineId).text('PKR 0.00');
+        //     return;
+        // }
 
-        var todaySales = lastReading - todayReading;
+        // Calculate today's sales
+        var todaySales = todayReading - lastReading;
         $('#todaySales_' + machineId).text(todaySales.toFixed(2) + ' LTR');
-        
+
+        // Get fuel type ID
         var fuelTypeId = null;
         var footerElement = $(this).closest('table').find('tfoot tr td:first');
         if (footerElement.length > 0 && footerElement.attr('id')) {
@@ -438,32 +600,35 @@ $(document).ready(function () {
                 fuelTypeId = idMatch[0];
             }
         }
-        
+
         if (!fuelTypeId) {
             var fuelTypeHeader = $(this).closest('table').prev('h4');
             if (fuelTypeHeader.length > 0) {
-                @foreach($fuelTypes as $fuelType)
+                @foreach($fuels as $fuelType)
                     if ('{{ $fuelType->name }}' === fuelTypeHeader.text().trim()) {
                         fuelTypeId = {{ $fuelType->id }};
                     }
                 @endforeach
             }
         }
-        
+
         if (!fuelTypeId) {
-            fuelTypeId = {{ $fuelTypes->first()->id ?? 0 }};
+            fuelTypeId = {{ $fuels->first()->id ?? 0 }};
         }
-        
+
+        // Get fuel price
         var fuelTypePrice = 0;
-        @foreach($fuelTypes as $fuelType)
+        @foreach($fuels as $fuelType)
             if ({{ $fuelType->id }} == fuelTypeId) {
                 fuelTypePrice = {{ $fuelType->price ?? 0 }};
             }
         @endforeach
-        
+
+        // Calculate and show total amount
         var totalAmount = todaySales * fuelTypePrice;
         $('#totalAmount_' + machineId).text('PKR ' + totalAmount.toFixed(2));
 
+        // Update total for this fuel type
         let total = 0;
         $(this).closest('table').find('tbody tr').each(function () {
             const val = $(this).find('td:last').text().replace(/[^\d.]/g, '');
@@ -471,9 +636,12 @@ $(document).ready(function () {
         });
 
         $('#totalFuelAmount_' + fuelTypeId).text('PKR ' + total.toFixed(2));
+
+        // Update overall grand total
         updateGrandTotal();
     });
 });
+
 </script>
 
 <script>
@@ -524,6 +692,19 @@ $(document).ready(function () {
 
         grandTotal += mobilTotal;
 
+      // totalExpense
+        const totalExpense = document.getElementById('totalExpense')?.textContent || '';
+        const expenseTotal = parseFloat(totalExpense.replace(/[^\d.-]/g, '')) || 0;
+
+        grandTotal += expenseTotal;
+      // Add Net Total Balance (can be negative or positive)
+        const netTotalText = document.getElementById('netTotalBalance')?.textContent || '';
+        const netTotal = parseFloat(netTotalText.replace(/[^\d.-]/g, '')) || 0;
+
+        grandTotal += netTotal;
+        
+
+        // Display the updated grand total
         document.getElementById('grandTotalAmount').textContent = `PKR ${grandTotal.toFixed(2)}`;
     }
 </script>

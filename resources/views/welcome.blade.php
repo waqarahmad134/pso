@@ -330,6 +330,10 @@
     </div>
     
     <script>
+
+        $('input[type=number]').on('wheel', function (e) {
+            e.preventDefault();
+        });
         // Toast notification setup
         @if(Session::has('message'))
         $(document).ready(function() {
