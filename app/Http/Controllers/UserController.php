@@ -15,6 +15,7 @@ use App\Models\MobilOil;
 use App\Models\Dip;
 use App\Models\ExpenseHistory;
 use App\Models\Transaction;
+use App\Models\ShiftData;
 use Cookie;
 
 class UserController extends Controller
@@ -372,8 +373,39 @@ class UserController extends Controller
 
     public function add_daily_record(Request $request)
     {
+        $request->validate([
+            'shift_date' => 'required|date',
+            'shift_type' => 'required',
+            'cashier_id' => 'required|exists:users,id',
+            'dip_petrol_id' => 'required|exists:dips,id',
+            'dip_diesel_id' => 'required|exists:dips,id',
+            'cash_in_hand' => 'required|numeric',
+            'bank_online' => 'required|numeric',
+        ]);
+    
+        // Fetch fuel prices
+        $petrolPrice = Fuel::where('name', 'petrol')->value('price');
+        $dieselPrice = Fuel::where('name', 'diesel')->value('price');
+    
+        // Fail-safe fallback
+        if (is_null($petrolPrice) || is_null($dieselPrice)) {
+            return response()->json(['error' => 'Fuel prices not found for petrol or diesel'], 422);
+        }
+    
+        // Save shift record
+        $shift = ShiftData::create([
+            'shift_date'     => $request->shift_date,
+            'shift_type'     => $request->shift_type,
+            'cashier_id'     => $request->cashier_id,
+            'dip_petrol_id'  => $request->dip_petrol_id,
+            'dip_diesel_id'  => $request->dip_diesel_id,
+            'petrol_price'   => $petrolPrice,
+            'diesel_price'   => $dieselPrice,
+            'cash_in_hand'   => $request->cash_in_hand,
+            'bank_online'    => $request->bank_online,
+        ]);
 
-        return $request->all();
+
         $user = Auth::user();
         if ($request->filled('transactions')) {
             $transactions = json_decode($request->transactions, true);
@@ -384,7 +416,8 @@ class UserController extends Controller
                     'payment_mode' => $txn['payment_mode'],
                     'amount' => $txn['amount'],
                     'description' => $txn['description'],
-                    'transaction_date' => $txn['transaction_date']
+                    'transaction_date' => $txn['transaction_date'],
+                    'shift_data_id' => $shift->id
                 ]);
             }
         }
@@ -402,6 +435,7 @@ class UserController extends Controller
                         'amount' => $expense['amount'],
                         'details' => $expense['details'],
                         'user_id' => $user->id,
+                        'shift_data_id' => $shift->id
                     ]);
                 }
             }

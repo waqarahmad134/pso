@@ -10,6 +10,7 @@ class Transaction extends Model
     use HasFactory;
     protected $fillable = [
         'user_id',
+        'shift_data_id',
         'transaction_type',           // debit or credit
         'payment_mode',   // cash or online
         'amount',
@@ -27,4 +28,5 @@ class Transaction extends Model
     {
         return $this->belongsTo(ShiftData::class, 'shift_data_id');
     }
+    
 }

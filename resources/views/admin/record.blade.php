@@ -25,6 +25,25 @@ input[type=number] {
                 </div>
             </div> 
         </div>
+        <div class="container-fluid">
+        <div class="row clearfix">
+            @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+            </div>
+            @endif
+
+            @if($errors->any())
+            <div class="alert alert-danger mt-2">
+                <ul class="mb-0">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif  
+        </div>
+    </div>
     <div class="container-fluid">
         <div class="row clearfix">
             <div class="col-lg-12">
@@ -38,14 +57,14 @@ input[type=number] {
                             <div class="row">
                                 <div class="col-md-6 col-lg-4">
                                     <label>Date</label>
-                                    <input name="date" type="shift_date" class="form-control" required>
+                                    <input name="shift_date" type="date" class="form-control" required>
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <label>Shift</label>
                                     <select name="shift_type" class="form-control" required>
                                         <option value="">-- Select Shift --</option>
-                                        <option value="Day">Morning</option>
-                                        <option value="Night">Night</option>
+                                        <option value="morning">Morning</option>
+                                        <option value="night">Night</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6 col-lg-4">

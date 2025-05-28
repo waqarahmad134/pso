@@ -26,7 +26,7 @@ return new class extends Migration
 
             // Optional foreign key
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('shift_data_id')->references('id')->on('shift_data')->onDelete('set null');
+            $table->foreign('shift_data_id')->references('id')->on('shift_data')->onDelete('cascade');
         });
 
 

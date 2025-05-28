@@ -17,6 +17,7 @@ class ExpenseHistory extends Model
         'amount',
         'details',
         'user_id',
+        'shift_data_id',
         'status',
     ];
 
