@@ -4,20 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Transaction extends Model
+
+class ExpenseHistory extends Model
 {
     use HasFactory;
-    protected $fillable = [
-        'user_id',
-        'transaction_type',           // debit or credit
-        'payment_mode',   // cash or online
-        'amount',
-        'description',
-        'transaction_date',
-    ];
+    use SoftDeletes;
 
-    protected $dates = ['transaction_date'];
+    protected $fillable = [
+        'expense_name',
+        'amount',
+        'details',
+        'user_id',
+        'status',
+    ];
 
     public function user()
     {

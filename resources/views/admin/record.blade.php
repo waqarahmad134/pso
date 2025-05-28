@@ -32,19 +32,19 @@ input[type=number] {
                     <div class="header">
                             <h2>General Information</h2>
                     </div>
-                    <form method="POST" action="{{ route('add_admins') }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('add_daily_record') }}" enctype="multipart/form-data">
                         @csrf
                         <div class="body pt-0">
                             <div class="row">
                                 <div class="col-md-6 col-lg-4">
                                     <label>Date</label>
-                                    <input name="date" type="date" class="form-control" required>
+                                    <input name="date" type="shift_date" class="form-control" required>
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <label>Shift</label>
-                                    <select name="shift" class="form-control" required>
+                                    <select name="shift_type" class="form-control" required>
                                         <option value="">-- Select Shift --</option>
-                                        <option value="Day">Day</option>
+                                        <option value="Day">Morning</option>
                                         <option value="Night">Night</option>
                                     </select>
                                 </div>
@@ -61,7 +61,7 @@ input[type=number] {
                             <div class="row mt-3">
                                 <div class="col-md-6 col-lg-6">
                                     <label>DIP Petrol</label>
-                                    <select name="shift" class="form-control" required>
+                                    <select name="dip_petrol_id" class="form-control" >
                                         <option value="">-- Select --</option>
                                         @foreach($dips as $dip)
                                             @if($dip->fuel_id == 1)
@@ -72,7 +72,7 @@ input[type=number] {
                                 </div>
                                 <div class="col-md-6 col-lg-6">
                                     <label>DIP Diesel</label>
-                                    <select name="shift" class="form-control" required>
+                                    <select name="dip_diesel_id" class="form-control" >
                                         <option value="">-- Select --</option>
                                         @foreach($dips as $dip)
                                             @if($dip->fuel_id == 2)
@@ -87,7 +87,6 @@ input[type=number] {
                                 <h2>Sales Information</h2>
                             </div>
                             
-
                             @foreach($fuels as $fuel)
                                 <h4>{{ $fuel->name }}</h4>
                                 <table class="table table-bordered">
@@ -160,23 +159,12 @@ input[type=number] {
                                         <td id="totalMobilOilAmount" class="font-weight-bold"></td>
                                     </tr>
                                 </tfoot>
-                            </table>
-
-                            <!-- <table class="table table-bordered mt-4">
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="5" class="text-right font-weight-bold">Grand Total:</td>
-                                        <td id="grandTotalAmount" class="font-weight-bold"></td>
-                                    </tr>
-                                </tfoot>
-                            </table> -->
-                          
+                            </table>                        
 
                             <div>
-                                <button  class="btn btn-primary shadow-lg" onclick="addExpenseModal()">
-                                >Add Expense Details</button>
+                                <div class="btn btn-primary shadow-lg" onclick="addExpense()">
+                                >Add Expense Details</div>
                             </div>
-
 
                             <table class="table table-bordered mt-4">
                                 <thead>
@@ -197,12 +185,13 @@ input[type=number] {
                                     </tr>
                                 </tfoot>
                             </table>
-
+                            <div id="expenseHiddenInputs"></div>
 
                             <div>
-                                <button class="btn btn-primary shadow-lg" onclick="addCredit()">
-                                >Add Debit/Credit</button>
+                                <div class="btn btn-primary shadow-lg" onclick="addCredit()">
+                                >Add Debit/Credit</div>
                             </div>
+                            
                             <table class="table table-bordered mt-4" id="debitCreditTable">
                                 <thead>
                                     <tr>
@@ -250,12 +239,15 @@ input[type=number] {
                                 </tfoot>
                             </table>
 
+                            <input type="hidden" name="transactions" id="transactionsData">
+
+
                             <div class="mb-4">
                                 <h5 class="mb-3">Collection Management</h5>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label for="inBankOnline" class="form-label">In Bank (Online)</label>
-                                        <input type="number" class="form-control" id="inBankOnline" name="in_bank_online" placeholder="Enter amount">
+                                        <input type="number" class="form-control" id="inBankOnline" name="bank_online" placeholder="Enter amount">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="cashInHand" class="form-label">Cash in Hand</label>
@@ -420,6 +412,13 @@ input[type=number] {
         `;
         tbody.appendChild(row);
 
+        const hiddenInputs = document.getElementById('expenseHiddenInputs');
+        hiddenInputs.innerHTML += `
+            <input type="hidden" name="expenses[${expenseIndex}][account_head]" value="${accountHead}">
+            <input type="hidden" name="expenses[${expenseIndex}][details]" value="${details}">
+            <input type="hidden" name="expenses[${expenseIndex}][amount]" value="${amount}">
+        `;
+
         // Update total
         totalExpense += amount;
         document.getElementById('totalExpense').innerText = totalExpense.toFixed(2);
@@ -427,17 +426,22 @@ input[type=number] {
         // Reset form and close modal
         this.reset();
         $('#addExpenseModal').modal('hide');
+        expenseIndex++;
+
         updateGrandTotal();
     });
 
     // Trigger modal
-    function addExpenseModal() {
+    function addExpenseModal(e) {
+        e.preventDefault();
         $('#addExpenseModal').modal('show');
     }
 </script>
 
 
 <script>
+    let transactions = [];
+
     $('#addDebitForm').on('submit', function (e) {
     e.preventDefault();
 
@@ -460,6 +464,21 @@ input[type=number] {
             <td>PKR ${amount.toFixed(2)}</td>
         </tr>
     `);
+
+    // Store in JS array
+    
+
+    transactions.push({
+        user_id: customerId,                // from dropdown/select
+        type: type.toLowerCase(),          // "debit" or "credit"
+        payment_mode: paymentMode.toLowerCase(),  // "cash" or "online"
+        amount: amount,
+        description: `${type} via ${paymentMode}`,
+        transaction_date: new Date().toISOString(), // e.g. "2025-05-28T12:00:00.000Z"
+    });
+
+    // Sync hidden field
+    $('#transactionsData').val(JSON.stringify(transactions));
 
     // Recalculate totals
     calculateTotals();

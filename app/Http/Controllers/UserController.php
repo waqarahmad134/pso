@@ -13,6 +13,8 @@ use App\Models\Fuel;
 use App\Models\FuelType;
 use App\Models\MobilOil;
 use App\Models\Dip;
+use App\Models\ExpenseHistory;
+use App\Models\Transaction;
 use Cookie;
 
 class UserController extends Controller
@@ -368,8 +370,42 @@ class UserController extends Controller
     }
 
 
-    public function add_daily_record()
+    public function add_daily_record(Request $request)
     {
+
+        return $request->all();
+        $user = Auth::user();
+        if ($request->filled('transactions')) {
+            $transactions = json_decode($request->transactions, true);
+            foreach ($transactions as $txn) {
+                Transaction::create([
+                    'user_id' => $txn['user_id'],
+                    'transaction_type' => $txn['type'],
+                    'payment_mode' => $txn['payment_mode'],
+                    'amount' => $txn['amount'],
+                    'description' => $txn['description'],
+                    'transaction_date' => $txn['transaction_date']
+                ]);
+            }
+        }
+
+        if ($request->has('expenses') && is_array($request->expenses)) {
+            foreach ($request->expenses as $expense) {
+                if (
+                    isset($expense['account_head']) &&
+                    isset($expense['details']) &&
+                    isset($expense['amount']) &&
+                    is_numeric($expense['amount'])
+                ) {
+                    ExpenseHistory::create([
+                        'expense_name' => $expense['account_head'],
+                        'amount' => $expense['amount'],
+                        'details' => $expense['details'],
+                        'user_id' => $user->id,
+                    ]);
+                }
+            }
+        }
         return redirect()->back()->with('sucess', 'New Record Added Sucessfully.');
     }
 

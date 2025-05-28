@@ -23,4 +23,15 @@ class Dip extends Model
     {
         return $this->belongsTo(Fuel::class);
     }
+
+    public function shiftPetrol()
+    {
+        return $this->hasMany(ShiftData::class, 'dip_petrol_id');
+    }
+
+    public function shiftDiesel()
+    {
+        return $this->hasMany(ShiftData::class, 'dip_diesel_id');
+    }
+
 }

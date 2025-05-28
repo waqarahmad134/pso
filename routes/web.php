@@ -338,7 +338,7 @@ Route::delete('stock_testing/{id}', [App\Http\Controllers\StockTestingController
 
 
 Route::get('record', [App\Http\Controllers\UserController::class, 'record'])->name('record');
-Route::get('add_daily_record', [App\Http\Controllers\UserController::class, 'add_daily_record'])->name('add_daily_record');
+Route::post('add_daily_record', [App\Http\Controllers\UserController::class, 'add_daily_record'])->name('add_daily_record');
 
 Route::get('sucess', function () {
     return view('sucess');

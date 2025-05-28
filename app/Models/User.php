@@ -46,9 +46,20 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function shiftData()
+    {
+        return $this->hasMany(ShiftData::class, 'cashier_id');
+    }
+
     public function transactions()
-    
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function expenseHistories()
+    {
+        return $this->hasMany(ExpenseHistory::class);
+    }
+
 }

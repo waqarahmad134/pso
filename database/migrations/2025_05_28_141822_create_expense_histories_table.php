@@ -13,20 +13,23 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('expense_histories', function (Blueprint $table) {
             $table->id();
+            $table->string('expense_name');
+            $table->decimal('amount', 10, 2);
+            $table->text('details')->nullable();
+            $table->string('status')->default('active');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('shift_data_id');
-            $table->enum('transaction_type', ['debit', 'credit']); 
-            $table->enum('payment_mode', ['cash', 'online']); 
-            $table->decimal('amount', 10, 2);
-            $table->text('description')->nullable();
-            $table->timestamp('transaction_date')->useCurrent();
             $table->timestamps();
             $table->softDeletes();
+
+            // Optional foreign key
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('shift_data_id')->references('id')->on('shift_data')->onDelete('set null');
         });
+
+
     }
 
     /**
@@ -36,6 +39,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('expense_histories');
     }
 };
