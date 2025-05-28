@@ -46,4 +46,9 @@ class ShiftData extends Model
     {
         return $this->hasMany(ExpenseHistory::class, 'shift_data_id');
     }
+
+    public function shiftReadings()
+    {
+        return $this->hasMany(ShiftReading::class, 'shift_data_id');
+    }
 }

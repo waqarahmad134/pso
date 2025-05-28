@@ -57,7 +57,7 @@ input[type=number] {
                             <div class="row">
                                 <div class="col-md-6 col-lg-4">
                                     <label>Date</label>
-                                    <input name="shift_date" type="date" class="form-control" required>
+                                    <input name="shift_date" type="date" class="form-control" id="shiftDate" required>
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <label>Shift</label>
@@ -158,7 +158,7 @@ input[type=number] {
                                         <tr>
                                             <td>Mobil Oil</td>
                                             <td>{{ $mobilOil->name }}</td>
-                                            <td>PKR {{ number_format($mobilOil->saleprice, 2) }}</td>
+                                            <td>PKR {{ number_format($mobilOil->sale_price, 2) }}</td>
                                             <td>{{ $mobilOil->inventory }}</td>
                                             <td>
                                                 <input class="form-control" type="number"
@@ -166,6 +166,9 @@ input[type=number] {
                                                     min="0"
                                                     max="{{ $mobilOil->inventory }}"
                                                     oninput="this.value = Math.min(this.value, this.max)" step="0.01">
+                                                    <input type="hidden" name="mobil_oils[{{ $mobilOil->id }}][mobil_id]" value="{{ $mobilOil->id }}">
+        <input type="hidden" name="mobil_oils[{{ $mobilOil->id }}][sale_price]" value="{{ $mobilOil->sale_price }}">
+
                                             </td>                                                
                                             <td id="mobilTotalAmount_{{ $mobilOil->id }}"></td>
                                         </tr>
@@ -555,60 +558,6 @@ function calculateTotals() {
     }
 
 
-// $(document).ready(function () {
-//     $('input[name^="today_reading"]').on('input', function () {
-//         var machineId = $(this).attr('name').match(/\d+/)[0];
-//         var lastReading = parseFloat($(this).closest('tr').find('td:nth-child(3)').text()) || 0;
-//         var todayReading = parseFloat($(this).val()) || 0;
-
-//         var todaySales = lastReading - todayReading;
-//         $('#todaySales_' + machineId).text(todaySales.toFixed(2) + ' LTR');
-        
-//         var fuelTypeId = null;
-//         var footerElement = $(this).closest('table').find('tfoot tr td:first');
-//         if (footerElement.length > 0 && footerElement.attr('id')) {
-//             var idMatch = footerElement.attr('id').match(/\d+/);
-//             if (idMatch) {
-//                 fuelTypeId = idMatch[0];
-//             }
-//         }
-        
-//         if (!fuelTypeId) {
-//             var fuelTypeHeader = $(this).closest('table').prev('h4');
-//             if (fuelTypeHeader.length > 0) {
-//                 @foreach($fuels as $fuelType)
-//                     if ('{{ $fuelType->name }}' === fuelTypeHeader.text().trim()) {
-//                         fuelTypeId = {{ $fuelType->id }};
-//                     }
-//                 @endforeach
-//             }
-//         }
-        
-//         if (!fuelTypeId) {
-//             fuelTypeId = {{ $fuels->first()->id ?? 0 }};
-//         }
-        
-//         var fuelTypePrice = 0;
-//         @foreach($fuels as $fuelType)
-//             if ({{ $fuelType->id }} == fuelTypeId) {
-//                 fuelTypePrice = {{ $fuelType->price ?? 0 }};
-//             }
-//         @endforeach
-        
-//         var totalAmount = todaySales * fuelTypePrice;
-//         $('#totalAmount_' + machineId).text('PKR ' + totalAmount.toFixed(2));
-
-//         let total = 0;
-//         $(this).closest('table').find('tbody tr').each(function () {
-//             const val = $(this).find('td:last').text().replace(/[^\d.]/g, '');
-//             total += parseFloat(val) || 0;
-//         });
-
-//         $('#totalFuelAmount_' + fuelTypeId).text('PKR ' + total.toFixed(2));
-//         updateGrandTotal();
-//     });
-// });
-
 $(document).ready(function () {
     $('input[name^="today_reading"]').on('input', function () {
         var $row = $(this).closest('tr');
@@ -747,5 +696,14 @@ $(document).ready(function () {
     }
 </script>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const today = new Date().toISOString().split('T')[0];
+        const shiftDateInput = document.getElementById('shiftDate');
+        shiftDateInput.value = today;
+        shiftDateInput.min = today;
+        shiftDateInput.max = today;
+    });
+</script>
     
 @endsection

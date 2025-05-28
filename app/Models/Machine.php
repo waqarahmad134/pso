@@ -28,4 +28,9 @@ class Machine extends Model
     {
         return $this->belongsTo(FuelType::class);
     }
+
+    public function shiftReadings()
+    {
+        return $this->hasMany(ShiftReading::class, 'machine_id');
+    }
 }

@@ -133,6 +133,11 @@
                                 <span>Dip Management</span>
                             </a>
                         </li>
+                        <li class="@if(\Request::route()->getName() == 'shift_data') active  @endif">
+                            <a class="m-auto w-100 text-center" href="{{route('shift_data.index')}}">
+                                <span>Shift Data</span>
+                            </a>
+                        </li>
                         <hr>
                         
                         <li>

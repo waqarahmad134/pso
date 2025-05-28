@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ShiftData;
+use App\Models\ShiftReading;
 use Illuminate\Http\Request;
 
-class ShiftDataController extends Controller
+class ShiftReadingController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,8 +14,7 @@ class ShiftDataController extends Controller
      */
     public function index()
     {
-        $shifts = ShiftData::with('cashier')->orderByDesc('shift_date')->get();
-        return view('shift_data', compact('shifts'));
+        //
     }
 
     /**
@@ -42,10 +41,10 @@ class ShiftDataController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\ShiftData  $shiftData
+     * @param  \App\Models\ShiftReading  $shiftReading
      * @return \Illuminate\Http\Response
      */
-    public function show(ShiftData $shiftData)
+    public function show(ShiftReading $shiftReading)
     {
         //
     }
@@ -53,10 +52,10 @@ class ShiftDataController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\ShiftData  $shiftData
+     * @param  \App\Models\ShiftReading  $shiftReading
      * @return \Illuminate\Http\Response
      */
-    public function edit(ShiftData $shiftData)
+    public function edit(ShiftReading $shiftReading)
     {
         //
     }
@@ -65,10 +64,10 @@ class ShiftDataController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ShiftData  $shiftData
+     * @param  \App\Models\ShiftReading  $shiftReading
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ShiftData $shiftData)
+    public function update(Request $request, ShiftReading $shiftReading)
     {
         //
     }
@@ -76,10 +75,10 @@ class ShiftDataController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\ShiftData  $shiftData
+     * @param  \App\Models\ShiftReading  $shiftReading
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ShiftData $shiftData)
+    public function destroy(ShiftReading $shiftReading)
     {
         //
     }

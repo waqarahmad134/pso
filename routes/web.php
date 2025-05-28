@@ -6,6 +6,7 @@ use App\Http\Controllers\MobilOilController;
 use App\Http\Controllers\DipController;
 use App\Http\Controllers\StockWastageController;
 use App\Http\Controllers\StockTestingController;
+use App\Http\Controllers\ShiftDataController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Artisan;
@@ -336,6 +337,7 @@ Route::get('stock_testing/update_status/{id}', [App\Http\Controllers\StockTestin
 Route::put('stock_testing/{id}', [App\Http\Controllers\StockTestingController::class, 'update'])->name('stock_testing.update');
 Route::delete('stock_testing/{id}', [App\Http\Controllers\StockTestingController::class, 'destroy'])->name('stock_testing.delete');
 
+Route::get('shift_data', [App\Http\Controllers\ShiftDataController::class, 'index'])->name('shift_data.index');
 
 Route::get('record', [App\Http\Controllers\UserController::class, 'record'])->name('record');
 Route::post('add_daily_record', [App\Http\Controllers\UserController::class, 'add_daily_record'])->name('add_daily_record');

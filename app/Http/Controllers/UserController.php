@@ -16,6 +16,8 @@ use App\Models\Dip;
 use App\Models\ExpenseHistory;
 use App\Models\Transaction;
 use App\Models\ShiftData;
+use App\Models\ShiftReading;
+
 use Cookie;
 
 class UserController extends Controller
@@ -371,17 +373,26 @@ class UserController extends Controller
     }
 
 
+    protected function getFuelPrice($type)
+    {
+        $fuel = \App\Models\Fuel::where('name', 'like', $type)->first();
+        return $fuel ? $fuel->price : 0;
+    }
+
     public function add_daily_record(Request $request)
     {
-        $request->validate([
-            'shift_date' => 'required|date',
-            'shift_type' => 'required',
-            'cashier_id' => 'required|exists:users,id',
-            'dip_petrol_id' => 'required|exists:dips,id',
-            'dip_diesel_id' => 'required|exists:dips,id',
-            'cash_in_hand' => 'required|numeric',
-            'bank_online' => 'required|numeric',
-        ]);
+        // return $request->all();
+        $user = Auth::user();
+
+        // $request->validate([
+        //     'shift_date' => 'required|date',
+        //     'shift_type' => 'required',
+        //     'cashier_id' => 'required|exists:users,id',
+        //     'dip_petrol_id' => 'required|exists:dips,id',
+        //     'dip_diesel_id' => 'required|exists:dips,id',
+        //     'cash_in_hand' => 'required|numeric',
+        //     'bank_online' => 'required|numeric',
+        // ]);
     
         // Fetch fuel prices
         $petrolPrice = Fuel::where('name', 'petrol')->value('price');
@@ -401,12 +412,72 @@ class UserController extends Controller
             'dip_diesel_id'  => $request->dip_diesel_id,
             'petrol_price'   => $petrolPrice,
             'diesel_price'   => $dieselPrice,
-            'cash_in_hand'   => $request->cash_in_hand,
-            'bank_online'    => $request->bank_online,
+            'cash_in_hand'   => $request->cash_in_hand ?? 0,
+            'bank_online'    => $request->bank_online ?? 0,
         ]);
 
+        if ($request->has('today_reading')) {
+            foreach ($request->today_reading as $machineId => $todayReading) {
+                if (!is_null($todayReading) && $todayReading !== '') {
+                    $machine = Machine::find($machineId);
+        
+                    if (!$machine) {
+                        continue;
+                    }
+        
+                    $lastReading = $machine->last_reading ?? 0;
+                    $litres = $todayReading - $lastReading;
+                    $litres = $litres > 0 ? $litres : 0;
+        
+                    $fuelPrice = optional($machine->fuelType)->price ?? 0;
+                    $amount = $litres * $fuelPrice;
+        
+                    // Save shift reading
+                    ShiftReading::create([
+                        'shift_data_id' => $shift->id, // from your main ShiftData creation
+                        'machine_id'    => $machine->id,
+                        'mobil_id'      => null,
+                        'last_reading'  => $lastReading,
+                        'today_reading' => $todayReading,
+                        'litres'        => $litres,
+                        'amount'        => $amount,
+                    ]);
+        
+                    // Update machine: last_reading and deduct litres from inventory
+                    $machine->update([
+                        'last_reading' => $todayReading,
+                        'liters'       => $machine->liters - $litres,
+                    ]);
+                }
+            }
+        }
+        
 
-        $user = Auth::user();
+
+        // ✅ Process Mobil Oils (quantity + price → ShiftReading)
+        if ($request->has('quantity')) {
+            foreach ($request->quantity as $mobilId => $qty) {
+                if (!empty($qty) && $qty > 0) {
+                    $salePrice = $request->mobil_oils[$mobilId]['sale_price'] ?? 0;
+                    ShiftReading::create([
+                        'shift_data_id' => $shift->id,
+                        'mobil_id'      => $mobilId,
+                        'litres'        => $qty,
+                        'amount'        => $qty * $salePrice,
+                        'last_reading'  => null,
+                        'today_reading' => null,
+                        'machine_id'    => null,
+                    ]);
+                    
+                    // ✅ Deduct quantity from MobilOil inventory
+                    $mobil = \App\Models\MobilOil::find($mobilId);
+                    if ($mobil) {
+                        $mobil->inventory = max(0, $mobil->inventory - $qty);
+                        $mobil->save();
+                    }
+                }
+            }
+        }
         if ($request->filled('transactions')) {
             $transactions = json_decode($request->transactions, true);
             foreach ($transactions as $txn) {

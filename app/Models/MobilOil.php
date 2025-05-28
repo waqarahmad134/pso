@@ -19,4 +19,9 @@ class MobilOil extends Model
     {
         return $this->morphMany(Stock::class, 'stockItem');
     }
+
+    public function shiftReadings()
+    {
+        return $this->hasMany(ShiftReading::class, 'mobil_id');
+    }
 }
