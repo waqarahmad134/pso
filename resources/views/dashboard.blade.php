@@ -63,14 +63,14 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
                                     <div>
-                                        <h5 class="card-title">Fuel Types                                        </h5>
+                                        <h5 class="card-title">Fuel Types</h5>
                                     </div>
                                     <div>
                                         <img src="{{asset('/public/1.png')}}" width="60" alt="">
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 class="card-text"> 2 </h4>
+                                    <h4 class="card-text"> {{ count($data) }} </h4>
                                 </div>
                             </div>
                         </div>
@@ -88,7 +88,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 class="card-text">104</h4>
+                                    <h4 class="card-text"> {{ count($users->where('usertype', 'customer')) }} </h4>
                                 </div>
                             </div>
                         </div>
@@ -105,7 +105,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 class="card-text">10</h4>
+                                    <h4 class="card-text"> {{ count($users->where('usertype', 'staff')) }} </h4>
                                 </div>
                             </div>
                         </div>
@@ -122,17 +122,18 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 class="card-text">5</h4>
+                                    <h4 class="card-text"> {{ count($users->where('usertype', 'admin')) }}  </h4>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    @foreach($data as $fuelData)
                     <div class="col-md-4 col-lg-4">
                         <div class="card shadow-lg dashboard-cards">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
                                     <div>
-                                        <h5 class="card-title">Diesel</h5>
+                                        <h5 class="card-title">{{ $fuelData->name }}</h5>
 
                                     </div>
                                     <div>
@@ -140,12 +141,13 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 class="card-text">4731.63 Liters </h4>
+                                    <h4 class="card-text">{{ $fuelData->liters }} Liters</h4>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 col-lg-4">
+                    @endforeach
+                    <!-- <div class="col-md-4 col-lg-4">
                         <div class="card shadow-lg dashboard-cards">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
@@ -157,11 +159,11 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 class="card-text">-7611.74 Liters</h4>
+                                    <h4 class="card-text"> Liters</h4>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="row mt-4">
                     @foreach($data as $fuel)

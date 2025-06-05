@@ -8,11 +8,16 @@ use Illuminate\Http\Request;
 
 class DipController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $fuel_id = $request->get('fuel_id');
+        $query = Dip::query();
+        if ($fuel_id) {
+            $query->where('fuel_id', $fuel_id);
+        }
+        $dips = $query->paginate(20);
         $fuel = Fuel::all();
-        $dips = Dip::all(); // No relations here as per your model
-        return view('dip', compact('dips', 'fuel'));
+        return view('dip', compact('dips', 'fuel', 'fuel_id'));
     }
 
     public function store(Request $request)
@@ -20,8 +25,6 @@ class DipController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|string|max:100',
-            'price' => 'required|numeric',
-            'liters' => 'required|numeric',
             'status' => 'required', // assuming status is present like in fuel
             'fuel_id' => 'required|exists:fuels,id',
         ]);
@@ -29,8 +32,6 @@ class DipController extends Controller
         Dip::create([
             'name' => $request->name,
             'type' => $request->type,
-            'price' => $request->price,
-            'liters' => $request->liters,
             'status' => $request->status,
             'fuel_id' => $request->fuel_id,
         ]);
@@ -44,9 +45,7 @@ class DipController extends Controller
             $request->validate([
                 'name' => 'sometimes|required|string|max:255',
                 'type' => 'sometimes|required|string|max:100',
-                'price' => 'sometimes|required|numeric',
-                'liters' => 'sometimes|required|numeric',
-                'status' => 'sometimes|required|boolean',
+                'status' => 'required',
                 'fuel_id' => 'sometimes|required|exists:fuels,id',
             ]);
 
@@ -54,8 +53,6 @@ class DipController extends Controller
 
             if ($request->has('name')) $dip->name = $request->name;
             if ($request->has('type')) $dip->type = $request->type;
-            if ($request->has('price')) $dip->price = $request->price;
-            if ($request->has('liters')) $dip->liters = $request->liters;
             if ($request->has('status')) $dip->status = $request->status;
             if ($request->has('fuel_id')) $dip->fuel_id = $request->fuel_id;
             $dip->save();
@@ -69,9 +66,8 @@ class DipController extends Controller
     public function updateStatus($id)
     {
         $dip = Dip::findOrFail($id);
-        $dip->status = !$dip->status; // toggle status (true/false)
+        $dip->status = !$dip->status; 
         $dip->save();
-
         return redirect()->route('dip.index')->with('success', 'Dip status updated!');
     }
 

@@ -19,6 +19,23 @@
     </div>
 
     <div class="container-fluid">
+
+        <!-- Fuel Tabs -->
+        <div class="container mb-3">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link {{ request('fuel_id') == null ? 'active' : '' }}" href="{{ route('dip.index') }}">All</a>
+                </li>
+                @foreach($fuel as $f)
+                <li class="nav-item">
+                    <a class="nav-link {{ request('fuel_id') == $f->id ? 'active' : '' }}" href="{{ route('dip.index', ['fuel_id' => $f->id]) }}">
+                        {{ $f->name }}
+                    </a>
+                </li>
+                @endforeach
+            </ul>
+        </div>
+
         <div class="row clearfix">
             <div class="col-lg-12">
                 <div class="card">
@@ -32,33 +49,26 @@
 
                     <div class="body">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover js-basic-example dataTable table-custom">
+                            <table class="table table-bordered table-hover dataTable table-custom">
                                 <thead>
                                     <tr>
                                         <th>Serial #</th>
-                                        <th>Dip Name</th>
-                                        <th>Type</th>
-                                        <th>Price</th>
-                                        <th>liters</th>
+                                        <th>Dip</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php $count = 1; ?>
-                                    @foreach($dips as $dip)
+                                    @foreach($dips as $index => $dip)
                                     <tr>
-                                        <td>{{ $count++ }}</td>
+                                        <td>{{ $dips->firstItem() + $index }}</td>
                                         <td>{{ $dip->name }}</td>
-                                        <td>{{ $dip->type }}</td>
-                                        <td>{{ $dip->price }}</td>
-                                        <td>{{ $dip->liters }}</td>
-                                        <td>{{ $dip->status == 1 ? 'Active' : 'Blocked' }}</td>
+                                        <td>{{ $dip->status == 1 || $dip->status == 'active' ? 'Active' : 'Blocked' }}</td>
                                         <td>
                                             <button class="btn btn-info" data-toggle="modal" data-target="#updateDipModal"
-                                                onclick="populateUpdateModal('{{ $dip->id }}', '{{ $dip->name }}', '{{ $dip->type }}', '{{ $dip->price }}', '{{ $dip->liters }}', '{{ $dip->status }}')">Edit</button>
+                                                onclick="populateUpdateModal('{{ $dip->id }}', '{{ $dip->name }}', '{{ $dip->status }}')">Edit</button>
 
-                                            @if($dip->status == 1)
+                                            @if($dip->status == 1 || $dip->status == 'active')
                                                 <a href="{{ route('dip.updateStatus', ['id' => $dip->id]) }}" class="btn btn-danger">Block</a>
                                             @else
                                                 <a href="{{ route('dip.updateStatus', ['id' => $dip->id]) }}" class="btn btn-success">Active</a>
@@ -74,6 +84,9 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            <div class="d-flex justify-content-center my-4">
+                                {{ $dips->withQueryString()->links('pagination::bootstrap-4') }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -97,29 +110,16 @@
                     <input name="name" type="text" class="form-control" required>
 
                     <label>Fuel</label>
-                    <select  class="form-control d-none" name="fuel_id" required>
+                    <select class="form-control" name="fuel_id" required>
                         @foreach($fuel as $data)
                             <option value="{{ $data->id }}">{{ $data->name }}</option>
                         @endforeach
                     </select>
 
-                    <label>Type</label>
-                    <select class="form-control" name="type" required>
-                        @foreach($fuel as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
-                        @endforeach
-                    </select>
-
-                    <label>Price</label>
-                    <input name="price" type="number" class="form-control" required>
-
-                    <label>liters</label>
-                    <input name="liters" type="number" class="form-control" step="0.01" required>
-
                     <label>Status</label>
                     <select class="form-control" name="status" required>
-                        <option value="1">Active</option>
-                        <option value="0">Blocked</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Blocked</option>
                     </select>
                 </div>
                 <div class="modal-footer">
@@ -146,19 +146,10 @@
                     <label>Dip Name</label>
                     <input name="name" type="text" class="form-control" id="editDipName" required>
 
-                    <label>Type</label>
-                    <input name="type" type="text" class="form-control" id="editDipType" required>
-
-                    <label>Price</label>
-                    <input name="price" type="number" class="form-control" id="editDipPrice" required>
-
-                    <label>liters</label>
-                    <input name="liters" type="number" class="form-control" id="editDipliters" step="0.01" required>
-
                     <label>Status</label>
                     <select class="form-control" name="status" id="editDipStatus" required>
-                        <option value="1">Active</option>
-                        <option value="0">Blocked</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Blocked</option>
                     </select>
                 </div>
                 <div class="modal-footer">
@@ -170,29 +161,11 @@
     </div>
 </div>
 
-
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const typeSelect = document.querySelector('select[name="type"]');
-        const fuelIdSelect = document.querySelector('select[name="fuel_id"]');
-
-        typeSelect.addEventListener("change", function () {
-            const selectedValue = this.value;
-            fuelIdSelect.value = selectedValue;
-        });
-    });
-</script>
-
-
-<script>
-    function populateUpdateModal(id, name, type, price, liters, status) {
+    function populateUpdateModal(id, name, status) {
         $('#editDipName').val(name);
-        $('#editDipType').val(type);
-        $('#editDipPrice').val(price);
-        $('#editDipliters').val(liters);
         $('#editDipStatus').val(status);
         $('#updateDipForm').attr('action', '{{ route("dip.update", "") }}/' + id);
     }
 </script>
-
 @endsection

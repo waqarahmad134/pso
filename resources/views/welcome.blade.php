@@ -157,7 +157,7 @@
                                 <span>Customers</span></a>
                             <ul>
                                 <li class="@if(\Request::route()->getName() == 'customers') active  @endif"><a href="{{route('customers')}}">Customer Listings</a></li>
-                                <li class="@if(\Request::route()->getName() == 'customers') active  @endif"><a href="{{route('list_users')}}">Customer Balances</a></li>
+                                <li class="@if(\Request::route()->getName() == 'customers') active  @endif"><a href="{{route('customers')}}">Customer Balances</a></li>
                             </ul>
                         </li>
 

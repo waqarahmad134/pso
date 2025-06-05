@@ -4,14 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Fuel;
+use App\Models\User;
+
 
 
 class HomeController extends Controller
 {
     public function home()
     {
-        $data = Fuel::with('fuelType')->get();        
-        return view('dashboard', ['data' => $data]);
+        $data = Fuel::with('fuelType')->get();     
+        $users = User::all();     
+        return view('dashboard', ['data' => $data, 'users' => $users]);
     }
 
     public function add_front(Request $request)

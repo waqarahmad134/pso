@@ -114,7 +114,7 @@ input[type=number] {
                                             <th>Fuel Type</th>
                                             <th>Machine</th>
                                             <th>Last Reading</th>
-                                            <th>Liter</th>
+                                            <!-- <th>Liter</th> -->
                                             <th>Today Reading</th>
                                             <th>Today Sales</th>
                                             <th>Total Amount</th>
@@ -126,7 +126,7 @@ input[type=number] {
                                                 <td >{{ $fuel->name }}</td>
                                                 <td>{{ $machine->name }}</td>
                                                 <td>{{ $machine->last_reading ?? 'N/A' }} </td>
-                                                <td>{{ $machine->liters }} </td>
+                                                <td class="d-none">{{ $machine->liters }} </td>
                                                 <td><input class="form-control" type="number" name="today_reading[{{ $machine->id }}]" step="0.01"></td>
                                                 <td id="todaySales_{{ $machine->id }}"></td>
                                                 <td id="totalAmount_{{ $machine->id }}"></td>
@@ -269,11 +269,11 @@ input[type=number] {
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label for="inBankOnline" class="form-label">In Bank (Online)</label>
-                                        <input type="number" class="form-control" id="inBankOnline" name="bank_online" placeholder="Enter amount">
+                                        <input type="number" class="form-control" id="inBankOnline" name="bank_online" placeholder="Enter amount" readonly>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="cashInHand" class="form-label">Cash in Hand</label>
-                                        <input type="number" class="form-control" id="cashInHand" name="cash_in_hand" placeholder="Enter amount">
+                                        <input type="number" class="form-control" id="cashInHand" name="cash_in_hand" placeholder="Enter amount" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -311,25 +311,9 @@ input[type=number] {
                     <label class="form-label">Account Head</label>
                     <select id="accountHead" name="account_head" class="form-control" required>
                         <option value="" selected>Select Account Head</option>
-                        <option value="Cost of sales">Cost of sales</option>
-                        <option value="Rent">Rent</option>
-                        <option value="Advertising expenses">Advertising expenses</option>
-                        <option value="Depreciation expense">Depreciation expense</option>
-                        <option value="Extraordinary expenses">Extraordinary expenses</option>
-                        <option value="Operating expenses">Operating expenses</option>
-                        <option value="Insurance">Insurance</option>
-                        <option value="Utilities expense">Utilities expense</option>
-                        <option value="Bank fees">Bank fees</option>
-                        <option value="Equipment maintenance">Equipment maintenance</option>
-                        <option value="Interest expense">Interest expense</option>
-                        <option value="Fixed expenses">Fixed expenses</option>
-                        <option value="Taxes">Taxes</option>
-                        <option value="Administrative expenses">Administrative expenses</option>
-                        <option value="Salaries">Salaries</option>
-                        <option value="Supplies expense">Supplies expense</option>
-                        <option value="Training and development">Training and development</option>
-                        <option value="Travel expenses">Travel expenses</option>
-                        <option value="PSO Reward">PSO Reward</option>
+                        @foreach($expenses as $expense)
+                            <option value="{{ $expense->name }}">{{ $expense->name }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -389,7 +373,7 @@ input[type=number] {
                         Cash
                         <input type="radio" name="payment_mode" value="Cash" required>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="pay_mode_online d-none justify-content-between align-items-center">
                         Online
                         <input type="radio" name="payment_mode" value="Online" required>
                     </div>
@@ -462,6 +446,22 @@ input[type=number] {
 
 
 <script>
+    $(document).ready(function () {
+        $('input[name="transaction_type"]').on('change', function () {
+            const T_type = $('input[name="transaction_type"]:checked').val();
+            if (T_type === "Debit") {
+                $('.pay_mode_online').removeClass('d-none');
+                $('.pay_mode_online').addClass('d-flex');
+            } else {
+                $('.pay_mode_online').addClass('d-none');
+                $('.pay_mode_online').removeClass('d-flex');
+            }
+        });
+    });
+</script>
+
+<script>
+
     let transactions = [];
 
     $('#addDebitForm').on('submit', function (e) {
@@ -470,6 +470,7 @@ input[type=number] {
     const customerId = $('select[name="customer-name"]').val();
     const customerName = $('select[name="customer-name"] option:selected').text();
     const type = $('input[name="transaction_type"]:checked').val(); // Debit or Credit
+    console.log("transaction_type" , type)
     const paymentMode = $('input[name="payment_mode"]:checked').val(); // Cash or Online
     const amount = parseFloat($('#record-amount').val());
 
@@ -683,20 +684,33 @@ $(document).ready(function () {
         const totalExpense = document.getElementById('totalExpense')?.textContent || '';
         const expenseTotal = parseFloat(totalExpense.replace(/[^\d.-]/g, '')) || 0;
 
-        grandTotal += expenseTotal;
-      // Add Net Total Balance (can be negative or positive)
-        const netTotalText = document.getElementById('netTotalBalance')?.textContent || '';
-        const netTotal = parseFloat(netTotalText.replace(/[^\d.-]/g, '')) || 0;
+        grandTotal -= expenseTotal;
 
-        grandTotal += netTotal;
+      // Add Net Total Balance (can be negative or positive)
+        // const totalDebitCredit = document.getElementById('totalDebitCredit')?.textContent || '';
+        // const netTotalDebitCredit = parseFloat(totalDebitCredit.replace(/[^\d.-]/g, '')) || 0;
+
+
+        const netTotalBalance = document.getElementById('netTotalBalance')?.textContent || '';
+        const grandTotalBalance = parseFloat(netTotalBalance.replace(/[^\d.-]/g, '')) || 0;
+
+
+        grandTotal += grandTotalBalance;
         
 
         // Display the updated grand total
         document.getElementById('grandTotalAmount').textContent = `PKR ${grandTotal.toFixed(2)}`;
+
+       
+        const netOnlineBalance = document.getElementById('netOnlineBalance')?.textContent || '';
+        const netOnline = parseFloat(netOnlineBalance.replace(/[^\d.-]/g, '')) || 0;
+
+        document.getElementById("inBankOnline").value = netOnline;
+        document.getElementById("cashInHand").value = grandTotal-netOnline;
     }
 </script>
 
-<script>
+<!-- <script>
     document.addEventListener('DOMContentLoaded', function () {
         const today = new Date().toISOString().split('T')[0];
         const shiftDateInput = document.getElementById('shiftDate');
@@ -704,6 +718,6 @@ $(document).ready(function () {
         shiftDateInput.min = today;
         shiftDateInput.max = today;
     });
-</script>
+</script> -->
     
 @endsection

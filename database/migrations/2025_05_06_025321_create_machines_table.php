@@ -12,7 +12,7 @@ return new class extends Migration {
             $table->string('name');
             $table->string('model')->nullable();
             $table->decimal('last_reading', 10, 2)->nullable();
-            $table->decimal('liters', 18, 2);
+            $table->decimal('liters', 18, 2)->nullable()->default(0);
             $table->unsignedBigInteger('fuel_id')->nullable(); 
             $table->unsignedBigInteger('fuel_type_id')->nullable();
             $table->string('status')->default('active');

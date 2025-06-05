@@ -17,6 +17,7 @@ use App\Models\ExpenseHistory;
 use App\Models\Transaction;
 use App\Models\ShiftData;
 use App\Models\ShiftReading;
+use App\Models\Expense;
 
 use Cookie;
 
@@ -366,10 +367,10 @@ class UserController extends Controller
         $fuels = Fuel::with('fuelType')->get();
         $mobilOils = MobilOil::all();
         $dips = Dip::all();
-
+        $expenses = Expense::all();
         
 
-        return view('admin.record', compact('customers', 'machines', 'fuels', 'mobilOils', 'dips'));
+        return view('admin.record', compact('customers', 'machines', 'fuels', 'mobilOils', 'dips', 'expenses'));
     }
 
 
@@ -381,7 +382,7 @@ class UserController extends Controller
 
     public function add_daily_record(Request $request)
     {
-        // return $request->all();
+        
         $user = Auth::user();
 
         // $request->validate([
@@ -416,6 +417,43 @@ class UserController extends Controller
             'bank_online'    => $request->bank_online ?? 0,
         ]);
 
+        // if ($request->has('today_reading')) {
+        //     foreach ($request->today_reading as $machineId => $todayReading) {
+        //         if (!is_null($todayReading) && $todayReading !== '') {
+        //             $machine = Machine::find($machineId);
+        
+        //             if (!$machine) {
+        //                 continue;
+        //             }
+        
+        //             $lastReading = $machine->last_reading ?? 0;
+        //             $litres = $todayReading - $lastReading;
+        //             $litres = $litres > 0 ? $litres : 0;
+        
+        //             $fuelPrice = optional($machine->fuelType)->price ?? 0;
+        //             $amount = $litres * $fuelPrice;
+        
+        //             // Save shift reading
+        //             ShiftReading::create([
+        //                 'shift_data_id' => $shift->id, // from your main ShiftData creation
+        //                 'machine_id'    => $machine->id,
+        //                 'mobil_id'      => null,
+        //                 'last_reading'  => $lastReading,
+        //                 'today_reading' => $todayReading,
+        //                 'litres'        => $litres,
+        //                 'amount'        => $amount,
+        //             ]);
+        
+        //             // Update machine: last_reading and deduct litres from inventory
+        //             $machine->update([
+        //                 'last_reading' => $todayReading,
+        //                 'liters'       => $machine->liters - $litres,
+        //             ]);
+        //         }
+        //     }
+        // }
+        
+
         if ($request->has('today_reading')) {
             foreach ($request->today_reading as $machineId => $todayReading) {
                 if (!is_null($todayReading) && $todayReading !== '') {
@@ -429,12 +467,14 @@ class UserController extends Controller
                     $litres = $todayReading - $lastReading;
                     $litres = $litres > 0 ? $litres : 0;
         
-                    $fuelPrice = optional($machine->fuelType)->price ?? 0;
+                    $fuel = $machine->fuel; 
+                    
+                    $fuelPrice = $fuel->price ?? 0;
                     $amount = $litres * $fuelPrice;
         
                     // Save shift reading
                     ShiftReading::create([
-                        'shift_data_id' => $shift->id, // from your main ShiftData creation
+                        'shift_data_id' => $shift->id,
                         'machine_id'    => $machine->id,
                         'mobil_id'      => null,
                         'last_reading'  => $lastReading,
@@ -443,11 +483,15 @@ class UserController extends Controller
                         'amount'        => $amount,
                     ]);
         
-                    // Update machine: last_reading and deduct litres from inventory
+                    // Update machine last reading
                     $machine->update([
                         'last_reading' => $todayReading,
-                        'liters'       => $machine->liters - $litres,
                     ]);
+        
+                    // Deduct litres from fuel stock (not from machine anymore)
+                    if ($fuel && $litres > 0) {
+                        $fuel->decrement('liters', $litres);
+                    }
                 }
             }
         }
@@ -513,7 +557,4 @@ class UserController extends Controller
         }
         return redirect()->back()->with('sucess', 'New Record Added Sucessfully.');
     }
-
-
-
 }

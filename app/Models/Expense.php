@@ -15,6 +15,5 @@ class Expense extends Model
     protected $fillable = [
         'name',
         'description',
-        'amount',
     ];  
 }

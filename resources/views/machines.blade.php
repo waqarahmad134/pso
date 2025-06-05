@@ -56,7 +56,7 @@
                                         <th>Serial #</th>
                                         <th>Machine Name</th>
                                         <th>Status</th>
-                                        <th>Liters</th>
+                                        <!-- <th>Liters</th> -->
                                         <th>Fuel Type</th>
                                         <th>Last Reading</th>
                                         <th>Action</th>
@@ -69,7 +69,7 @@
                                         <td>{{ $count++ }}</td>
                                         <td>{{ $machine->name }}</td>
                                         <td>{{ $machine->status == "active" ? 'Active' : 'Blocked' }}</td>
-                                        <td>{{ $machine->liters }}</td>
+                                        <!-- <td>{{ $machine->liters }}</td> -->
                                         <td>{{ $machine->fuel->name }}</td>
                                         <td>{{ $machine->last_reading }}</td>
                                         <td>

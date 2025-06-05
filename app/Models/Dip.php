@@ -12,11 +12,9 @@ class Dip extends Model
 
     protected $fillable = [
         'name',
-        'type',
-        'price',
-        'liters',
+        'value',
         'status',
-        'fuel_id',
+        'fuel_id',  
     ];
 
     public function fuel()

@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             FuelTypesTableSeeder::class,
             FuelsTableSeeder::class,
+            DipSeeder::class,
+            ExpensesTableSeeder::class,
             MachinesTableSeeder::class,
             MobilOilsTableSeeder::class,
         ]);

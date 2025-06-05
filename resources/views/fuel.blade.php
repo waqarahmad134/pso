@@ -23,7 +23,7 @@
                 <div class="card">
                     <div class="header">
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addFuelModal">Add New Fuel</button>
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#assignFuelModal">Assign Fuel to Machine</button>
+                        <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#assignFuelModal">Assign Fuel to Machine</button> -->
                     </div>
                     <div class="body">
                         <div class="table-responsive">

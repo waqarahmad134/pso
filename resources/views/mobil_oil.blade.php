@@ -85,7 +85,7 @@
                     <input name="sale_price" type="number" step="0.01" class="form-control" required>
 
                     <label>Inventory</label>
-                    <input name="inventory" type="number" class="form-control" required>
+                    <input name="inventory" type="number" value="0" class="form-control" required readonly>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

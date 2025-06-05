@@ -16,9 +16,7 @@ return new class extends Migration
         Schema::create('dips', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('type');
-            $table->decimal('price', 10, 2);
-            $table->decimal('liters', 10, 2);
+            $table->string('value');
             $table->string('status');
             $table->unsignedBigInteger('fuel_id');
             $table->timestamps(); 

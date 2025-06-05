@@ -132,45 +132,6 @@ Route::middleware(['checktoken'])->group(function () {
     Route::post('driver_bank', [App\Http\Controllers\DriverController::class, 'driver_bank'])->name('driver_bank');
     Route::get('driver_rides', [App\Http\Controllers\DriverController::class, 'driver_rides'])->name('driver_rides');
 
-    Route::get('orders', function () {
-        return view('order/orders');
-    })->name('orders');
-
-    Route::get('list_business', function () {
-        return view('business/list_business');
-    })->name('list_business');
-
-    Route::get('add_business', function () {
-        return view('business/add_business');
-    })->name('add_business');
-
-    Route::get('categories', [App\Http\Controllers\CategoryController::class, 'categories'])->name('categories');
-    Route::get('cat_activate/{id}', [App\Http\Controllers\CategoryController::class, 'cat_activate'])->name('cat_activate');
-    Route::get('cat_block/{id}', [App\Http\Controllers\CategoryController::class, 'cat_block'])->name('cat_block');
-    Route::get('cat_delete/{id}', [App\Http\Controllers\CategoryController::class, 'cat_delete'])->name('cat_delete');
-    Route::post('categories', [App\Http\Controllers\CategoryController::class, 'add_category'])->name('add_category');
-
-    Route::get('sizes', function () {
-        return view('sizes');
-    })->name('sizes');
-
-
-
-    Route::get('payment_methods', [App\Http\Controllers\PaymentHistory::class, 'payment_methods'])->name('payment_methods');
-    Route::post('update_payment_method', [App\Http\Controllers\PaymentHistory::class, 'update_payment_method'])->name('update_payment_method');
-    Route::post('add_payment_method', [App\Http\Controllers\PaymentHistory::class, 'add_payment_method'])->name('add_payment_method');
-    Route::get('block_payment_method/{id}', [App\Http\Controllers\PaymentHistory::class, 'block_payment_method'])->name('block_payment_method');
-    Route::get('active_payment_method/{id}', [App\Http\Controllers\PaymentHistory::class, 'active_payment_method'])->name('active_payment_method');
-
-    Route::post('get_payment_method', [App\Http\Controllers\PaymentHistory::class, 'get_payment_method'])->name('get_payment_method');
-
-
-    Route::get('payment_history', [App\Http\Controllers\PaymentHistory::class, 'payment_history'])->name('payment_history');
-    Route::get('payment', [App\Http\Controllers\PaymentHistory::class, 'payment'])->name('payment');
-    Route::get('pending_payment', [App\Http\Controllers\PaymentHistory::class, 'pending_payment'])->name('pending_payment');
-    Route::get('pending_payment_accept/{id}/{amount}/{userId}', [App\Http\Controllers\PaymentHistory::class, 'pending_payment_accept'])->name('pending_payment_accept');
-
-
     Route::get('register', function () {
         return view('auth/register');
     })->name('register');
@@ -178,80 +139,12 @@ Route::middleware(['checktoken'])->group(function () {
     Route::post('register', [App\Http\Controllers\UserController::class, 'register'])->name('registers');
   
 
-
-    Route::get('filter', function () {
-        return view('earnings/filter');
-    })->name('filter');
-
-
     Route::get('admin_earnings', [App\Http\Controllers\EarningController::class, 'index'])->name('admin_earnings');
-    Route::get('dashboard_booking_info', [App\Http\Controllers\EarningController::class, 'dashboard_booking_info'])->name('dashboard_booking_info');
-    Route::post('earning_filter', [App\Http\Controllers\EarningController::class, 'earning_filter'])->name('earning_filter');
-
-
-
-
-
-    Route::get('push_notification', [App\Http\Controllers\UserController::class, 'push_notification'])->name('push_notification');
-    Route::post('send_notifications', [App\Http\Controllers\UserController::class, 'send_notifications'])->name('send_notifications');
-
-
-    Route::get('vehicleinfo', function () {
-        return view('vehicle/vehicleinfo');
-    })->name('vehicleinfo');
-
-
-
 
     Route::get('change_password', function () {
         return view('front-end-settings/change_password');
     })->name('change_password');
     Route::post('change_password', [App\Http\Controllers\UserController::class, 'change_password_post'])->name('change_password_post');
-
-
-
-    Route::get('charges', [App\Http\Controllers\ChargeController::class, 'charges'])->name('charges');
-    Route::post('update_amount', [App\Http\Controllers\ChargeController::class, 'update_amount'])->name('update_amount');
-    Route::post('update_value', [App\Http\Controllers\ChargeController::class, 'update_value'])->name('update_value');
-    Route::post('update_charge', [App\Http\Controllers\ChargeController::class, 'update_charge'])->name('update_charge');
-
-    Route::post('add_coupon', [App\Http\Controllers\CouponController::class, 'add_coupon'])->name('add_coupons');
-    Route::post('coupon_detail/{id}', [App\Http\Controllers\CouponController::class, 'coupon_detail'])->name('coupon_detail');
-    Route::get('add_coupon', [App\Http\Controllers\CouponController::class, 'coupons'])->name('add_coupon');
-    Route::post('deactivate', [App\Http\Controllers\CouponController::class, 'deactivate'])->name('deactivate');
-    Route::post('activate', [App\Http\Controllers\CouponController::class, 'activate'])->name('activate');
-    Route::post('update_coupon', [App\Http\Controllers\CouponController::class, 'update_coupon'])->name('update_coupon');
-    Route::get('coupons_detail/{id}', [App\Http\Controllers\CouponController::class, 'coupons_detail'])->name('coupons_detail');
-    Route::post('delete', [App\Http\Controllers\CouponController::class, 'delete'])->name('delete');
-
-
-
-    Route::get('all_bookings', [App\Http\Controllers\BookingController::class, 'all_bookings'])->name('all_bookings');
-    Route::get('cancel_bookings', [App\Http\Controllers\BookingController::class, 'cancel_bookings'])->name('cancel_bookings');
-    Route::get('booking_detail/{id}', [App\Http\Controllers\BookingController::class, 'booking_detail'])->name('booking_detail');
-    Route::get('booking_data/{id}', [App\Http\Controllers\BookingController::class, 'booking_data'])->name('booking_data');
-    Route::get('booking_details/{id}', [App\Http\Controllers\BookingController::class, 'booking_details'])->name('booking_details');
-    Route::get('driver_detail/{id}', [App\Http\Controllers\DriverController::class, 'driver_detail'])->name('driver_detail');
-
-
-    Route::get('roles', [App\Http\Controllers\BookingController::class, 'roles'])->name('roles');
-    Route::get('deleterole/{id}', [App\Http\Controllers\BookingController::class, 'deleterole'])->name('deleterole');
-    Route::post('roles', [App\Http\Controllers\BookingController::class, 'roles_post'])->name('roles_post');
-    Route::get('role_activate/{id}', [App\Http\Controllers\BookingController::class, 'role_activate'])->name('role_activate');
-    Route::get('role_block/{id}', [App\Http\Controllers\BookingController::class, 'role_block'])->name('role_block');
-
-    Route::get('all_vec', [App\Http\Controllers\VehicleController::class, 'all_vec'])->name('all_vec');
-    Route::get('vehicle_delete/{id}', [App\Http\Controllers\VehicleController::class, 'vehicle_delete'])->name('vehicle_delete');
-    Route::get('vec_detail/{id}', [App\Http\Controllers\VehicleController::class, 'vec_detail'])->name('vec_detail');
-    Route::get('activate_vec/{id}', [App\Http\Controllers\VehicleController::class, 'activate'])->name('activate_vec');
-    Route::get('block/{id}', [App\Http\Controllers\VehicleController::class, 'block'])->name('block');
-    Route::post('add_vecs', [App\Http\Controllers\VehicleController::class, 'add_vec'])->name('add_vecs');
-    Route::post('update_vec', [App\Http\Controllers\VehicleController::class, 'update_vec'])->name('update_vec');
-    Route::get('vecdelete/{id}', [App\Http\Controllers\VehicleController::class, 'vecdelete'])->name('vecdelete');
-
-    Route::get('packages', [App\Http\Controllers\PackageController::class, 'packages'])->name('packages');
-    Route::get('delete_package/{id}', [App\Http\Controllers\PackageController::class, 'delete_package'])->name('delete_package');
-    Route::post('add_banner', [App\Http\Controllers\PackageController::class, 'add_banner'])->name('add_banner');
 
 
 
