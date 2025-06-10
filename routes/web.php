@@ -164,7 +164,9 @@ Route::middleware('auth')->group(function () {
 
 // users routes
 Route::get('customers', [App\Http\Controllers\UserController::class, 'customers'])->name('customers');
+Route::get('customers_balance', [App\Http\Controllers\UserController::class, 'customers_balance'])->name('customers_balance');
 Route::get('staffs', [App\Http\Controllers\UserController::class, 'staffs'])->name('staffs');
+Route::get('staffs_balance', [App\Http\Controllers\UserController::class, 'staffs_balance'])->name('staffs_balance');
 Route::get('suppliers', [App\Http\Controllers\UserController::class, 'suppliers'])->name('suppliers');
 Route::get('list_admin', [App\Http\Controllers\UserController::class, 'list_admin'])->name('list_admin');
 Route::get('update_status/{id}', [App\Http\Controllers\UserController::class, 'update_status'])->name('update_status');

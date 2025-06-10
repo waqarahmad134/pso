@@ -348,13 +348,28 @@ input[type=number] {
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label class="form-label">Select Customer</label>
-                    <select name="customer-name" class="form-control" required>
-                        <option value="">-- Select Cashier (Customer) --</option>
+                <label class="form-label">Select Type</label>
+                    <select id="userTypeSelector" class="form-control" required>
+                        <option value="">-- Select Type --</option>
+                        <option value="staff">Staff</option>
+                        <option value="customer">Customer</option>
+                    </select>
+
+                    <label class="form-label">Select User (Customer or Staff)</label>
+                    <select id="staffSelect" name="staff-name" class="form-control user-type user-staff d-none">
+                        <option value="">-- Select Staff --</option>
+                        @foreach($staffs as $staff)
+                            <option value="{{ $staff->id }}">{{ $staff->name }} ({{ $staff->email }})</option>
+                        @endforeach
+                    </select>
+
+                    <select id="customerSelect" name="customer-name" class="form-control user-type user-customer d-none">
+                        <option value="">-- Select Customer (Customer) --</option>
                         @foreach($customers as $customer)
                             <option value="{{ $customer->id }}">{{ $customer->name }} ({{ $customer->email }})</option>
                         @endforeach
                     </select>
+
                 </div>
                 <div class="mb-3">
                     <label class="form-label" >Type</label>
@@ -461,6 +476,7 @@ input[type=number] {
 </script>
 
 <script>
+    
 
     let transactions = [];
 
@@ -468,31 +484,30 @@ input[type=number] {
     e.preventDefault();
 
     const customerId = $('select[name="customer-name"]').val();
+    const staffId = $('select[name="staff-name"]').val();
     const customerName = $('select[name="customer-name"] option:selected').text();
+    const staffName = $('select[name="staff-name"] option:selected').text();
     const type = $('input[name="transaction_type"]:checked').val(); // Debit or Credit
-    console.log("transaction_type" , type)
     const paymentMode = $('input[name="payment_mode"]:checked').val(); // Cash or Online
     const amount = parseFloat($('#record-amount').val());
 
-    if (!customerId || !type || !paymentMode || isNaN(amount)) {
-        alert("Please fill all fields including customer, transaction type, payment mode and amount.");
+    if ((!customerId && !staffId) || !type || !paymentMode || isNaN(amount)) {
+        console.log("Please fill all fields including customer, transaction type, payment mode and amount.");
         return;
     }
 
     // Append to table
     $('#debitCreditTable tbody').append(`
         <tr data-type="${type}" data-mode="${paymentMode}" data-amount="${amount}">
-            <td>${customerName}</td>
+            <td>${customerName || staffName}</td>
             <td>${type} (${paymentMode})</td>
             <td>PKR ${amount.toFixed(2)}</td>
         </tr>
     `);
 
-    // Store in JS array
-    
 
     transactions.push({
-        user_id: customerId,                // from dropdown/select
+        user_id: customerId || staffId,                // from dropdown/select
         type: type.toLowerCase(),          // "debit" or "credit"
         payment_mode: paymentMode.toLowerCase(),  // "cash" or "online"
         amount: amount,
@@ -720,4 +735,28 @@ $(document).ready(function () {
     });
 </script> -->
     
+
+<script>
+    const selector = document.getElementById('userTypeSelector');
+    const staffSelect = document.getElementById('staffSelect');
+    const customerSelect = document.getElementById('customerSelect');
+
+    selector.addEventListener('change', function () {
+        // Hide all and remove required
+        staffSelect.classList.add('d-none');
+        customerSelect.classList.add('d-none');
+        staffSelect.removeAttribute('required');
+        customerSelect.removeAttribute('required');
+
+        // Show selected and add required
+        if (this.value === 'staff') {
+            staffSelect.classList.remove('d-none');
+            staffSelect.setAttribute('required', 'required');
+        } else if (this.value === 'customer') {
+            customerSelect.classList.remove('d-none');
+            customerSelect.setAttribute('required', 'required');
+        }
+    });
+</script>
+
 @endsection

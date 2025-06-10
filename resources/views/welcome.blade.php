@@ -157,7 +157,7 @@
                                 <span>Customers</span></a>
                             <ul>
                                 <li class="@if(\Request::route()->getName() == 'customers') active  @endif"><a href="{{route('customers')}}">Customer Listings</a></li>
-                                <li class="@if(\Request::route()->getName() == 'customers') active  @endif"><a href="{{route('customers')}}">Customer Balances</a></li>
+                                <li class="@if(\Request::route()->getName() == 'customers_balance') active  @endif"><a href="{{route('customers_balance')}}">Customer Balances</a></li>
                             </ul>
                         </li>
 
@@ -171,7 +171,7 @@
                                 <span>Staff</span></a>
                             <ul>
                                 <li class="@if(\Request::route()->getName() == 'staffs') active  @endif"><a href="{{route('staffs')}}">Staff Listings</a></li>
-                                <li class="@if(\Request::route()->getName() == 'staffs') active  @endif"><a href="{{route('staffs')}}">Staff Balances</a></li>
+                                <li class="@if(\Request::route()->getName() == 'staffs_balance') active  @endif"><a href="{{route('staffs_balance')}}">Staff Balances</a></li>
                             </ul>
                         </li>
                         

@@ -47,8 +47,28 @@ class UserController extends Controller
                     ->get(); 
         return view('admin.customers', ['data' => $data]);
     }
+    
+    public function customers_balance()
+    {
+        $data = User::where('usertype', 'customer')
+                    ->whereHas('transactions') 
+                    ->with('transactions')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+    
+        return view('admin.customers_balance', ['data' => $data]);
+    }
+    
 
     public function staffs()
+    {
+        $data = User::where('usertype', 'staff')
+                    ->orderBy('created_at', 'desc')
+                    ->get(); 
+        return view('admin.staffs', ['data' => $data]);
+    }
+
+    public function staffs_balance()
     {
         $data = User::where('usertype', 'staff')
                     ->orderBy('created_at', 'desc')
@@ -363,14 +383,13 @@ class UserController extends Controller
     public function record()
     {
         $customers = User::where('usertype', 'customer')->get();
+        $staffs = User::where('usertype', 'staff')->get();
         $machines = Machine::all();
         $fuels = Fuel::with('fuelType')->get();
         $mobilOils = MobilOil::all();
         $dips = Dip::all();
         $expenses = Expense::all();
-        
-
-        return view('admin.record', compact('customers', 'machines', 'fuels', 'mobilOils', 'dips', 'expenses'));
+        return view('admin.record', compact('customers', 'staffs', 'machines', 'fuels', 'mobilOils', 'dips', 'expenses'));
     }
 
 
@@ -382,19 +401,8 @@ class UserController extends Controller
 
     public function add_daily_record(Request $request)
     {
-        
         $user = Auth::user();
 
-        // $request->validate([
-        //     'shift_date' => 'required|date',
-        //     'shift_type' => 'required',
-        //     'cashier_id' => 'required|exists:users,id',
-        //     'dip_petrol_id' => 'required|exists:dips,id',
-        //     'dip_diesel_id' => 'required|exists:dips,id',
-        //     'cash_in_hand' => 'required|numeric',
-        //     'bank_online' => 'required|numeric',
-        // ]);
-    
         // Fetch fuel prices
         $petrolPrice = Fuel::where('name', 'petrol')->value('price');
         $dieselPrice = Fuel::where('name', 'diesel')->value('price');

@@ -41,13 +41,16 @@
             @endif  
         </div>
     </div>
+    <pre>
 
+    </pre>
     <div class="container-fluid">
         <div class="row clearfix">
             <div class="col-lg-12">
                 <div class="card">
                     <div class="header d-flex justify-content-between pb-0 mb-0">
-                        <h2>User With Transactions</h2>
+                        <h2>User Management</h2>
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModalCenter">Add New Customer</button>
                     </div>
                     <div class="body">
                         <div class="table-responsive">
@@ -59,7 +62,6 @@
                                         <th>Phone</th>
                                         <th>Email</th>
                                         <th>Created At</th>
-                                        <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -73,18 +75,7 @@
                                         <td>{{ $d->email }}</td>
                                         <td>{{ date('d,M Y h:i:s', strtotime($d->created_at)) }}</td>
                                         <td>
-                                            @if($d->status == "active")
-                                                <span>Active</span>
-                                            @else
-                                                <span>Block</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($d->status == "active")
-                                                <a href="{{ route('update_status', ['id' => $d->id]) }}" class="btn btn-danger">Block</a>
-                                            @else
-                                                <a href="{{ route('update_status', ['id' => $d->id]) }}" class="btn btn-success">Active</a>
-                                            @endif
+                                           <!-- <button class="btn btn-info" onclick="seeTransactions({{ $d->transactions }})">See Transactions</button> -->
                                         </td>
                                     </tr>
                                     @endforeach
@@ -118,35 +109,6 @@
                             <label>First Name</label>
                             <input name="firstName" type="text" class="form-control" placeholder="Enter First Name Here" required>
                         </div>
-                        <div class="col-md-6 col-lg-6">
-                            <label>Last Name</label>
-                            <input name="lastName" type="text" class="form-control" placeholder="Enter Last name here" required>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 col-lg-6">
-                            <label>Email</label>
-                            <input name="email" type="email" class="form-control" autocomplete="off" placeholder="Enter Email Address Here" required>
-                        </div>
-                        <div class="col-md-6 col-lg-6">
-                            <label>Phone</label>
-
-                            <input class="form-control tel" type="tel" name="leyka_donor_phone" inputmode="tel" value="" / required>
-                            <input class="form-control tel" id="countrycode" type="hidden" name="countrycode" value="" / required>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 col-lg-6">
-                            <label for="passInput">Password</label>
-                            <input name="password" type="password" id="passInput" class="form-control" placeholder="Enter Password Here" required autocomplete="off">
-                            <input type="checkbox" id="showPass">&nbsp; Show Password
-                        </div>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label for="usertype">User Type</label>
-                        <select name="usertype" class="form-control" required>
-                            <option value="customer">Customer</option>
-                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -157,62 +119,6 @@
         </form>
     </div>
 </div>
-
-
-
-<script>
-     function closeModel(){
-        $('#myForm')[0].reset();
-    }
-   
-    function validateEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
-</script>
-
-
-<script>
-   
-    $(document).ready(function() {
-        $('#example1').DataTable({
-            dom: 'Bfrtip',
-            buttons: [{
-                    extend: 'copy',
-                    exportOptions: {
-                        columns: ':not(:nth-child(6))'
-                    }
-                },
-                {
-                    extend: 'csv',
-                    exportOptions: {
-                        columns: ':not(:nth-child(6))'
-                    }
-                },
-                {
-                    extend: 'print',
-                    exportOptions: {
-                        columns: ':not(:nth-child(6))'
-                    }
-                }
-            ]
-        });
-    });
-    $(document).ready(function() {
-        $('#showPass').on('click', function() {
-            var passInput = $("#passInput");
-            if (passInput.attr('type') === 'password') {
-                passInput.attr('type', 'text');
-            } else {
-                passInput.attr('type', 'password');
-            }
-        })
-    })
-
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-
 
 
 @endsection
